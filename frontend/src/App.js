@@ -197,19 +197,86 @@ function App() {
               </button>
 
               {/* Power */}
-              <div>
-                <h3>Power:</h3>
-                <div style={row}>
-                  <label style={{ width: 90 }}>Voltage:</label>
-                  <input type="number" value={volts} onChange={(e) => setVolts(e.target.value)} style={{ width: 90 }} />
-                </div>
-                <div style={row}>
-                  <label style={{ width: 90 }}>Wattage:</label>
-                  <input type="number" value={watts} onChange={(e) => setWatts(e.target.value)} style={{ width: 90 }} />
-                </div>
-                <p style={{ color: "gray", marginTop: "14px" }}>{wattDensity} watts/cm²</p>
-                {wattDensity > 0.8 && <p style={{ color: "red", fontWeight: "bold" }}>⚠ This power exceeds our recommended maximum.</p>}
-              </div>
+   {/* --- Power Section --- */}
+<div
+  style={{
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    padding: "20px",
+    marginBottom: "24px",
+  }}
+>
+  <h3 style={{ color: "#1976d2", marginBottom: "12px" }}>⚡ Power Configuration</h3>
+
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: "12px",
+    }}
+  >
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <label style={{ width: 100, fontWeight: "bold", color: "#333" }}>
+        Voltage (V):
+      </label>
+      <input
+        type="number"
+        value={volts}
+        onChange={(e) => setVolts(e.target.value)}
+        placeholder="e.g. 230"
+        style={{
+          flex: 1,
+          padding: "8px",
+          border: "1px solid #ccc",
+          borderRadius: "6px",
+          fontSize: "14px",
+        }}
+      />
+    </div>
+
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <label style={{ width: 100, fontWeight: "bold", color: "#333" }}>
+        Wattage (W):
+      </label>
+      <input
+        type="number"
+        value={watts}
+        onChange={(e) => setWatts(e.target.value)}
+        placeholder="e.g. 500"
+        style={{
+          flex: 1,
+          padding: "8px",
+          border: "1px solid #ccc",
+          borderRadius: "6px",
+          fontSize: "14px",
+        }}
+      />
+    </div>
+  </div>
+
+  <div
+    style={{
+      backgroundColor: "#f3f6fa",
+      padding: "10px",
+      borderRadius: "6px",
+      marginTop: "16px",
+      textAlign: "center",
+      color: "#1976d2",
+      fontWeight: "bold",
+      fontSize: "14px",
+    }}
+  >
+    Power Density: {wattDensity} W/cm²
+  </div>
+
+  {wattDensity > 0.8 && (
+    <p style={{ color: "red", fontWeight: "bold", marginTop: "10px" }}>
+      ⚠ This power exceeds our recommended maximum.
+    </p>
+  )}
+</div>
+
 
               <div style={{ marginBottom: "14px" }}>
                 <h3>Dimensions:</h3>
@@ -479,58 +546,98 @@ function App() {
           )}
 
           {/* === PAGE 3 === */}
-          {page === 3 && (
-            <>
-              <h1>Contact Information</h1>
-              <div style={{ marginTop: 10 }}>
-                <h3>Name:</h3>
-                <input type="text" placeholder="Your name" style={{ width: "80%", padding: "8px" }} />
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <h3>Company:</h3>
-                <input type="text" placeholder="Your company" style={{ width: "80%", padding: "8px" }} />
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <h3>Email:</h3>
-                <input type="email" placeholder="Your email" style={{ width: "80%", padding: "8px" }} />
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <h3>Phone:</h3>
-                <input type="tel" placeholder="Your phone number" style={{ width: "80%", padding: "8px" }} />
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <h3>Additional Notes:</h3>
-                <textarea placeholder="Enter any special requirements..." style={{ width: "80%", height: "100px", padding: "8px" }} />
-              </div>
+{page === 3 && (
+  <>
+    <h1>Contact Information</h1>
 
-              <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
-                <button
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#1976d2",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                  onClick={() => setPage(2)}
-                >
-                  Back
-                </button>
-                <button
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "green",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                  onClick={() => alert("Quote submitted!")}
-                >
-                  Submit Quote
-                </button>
-              </div>
-            </>
-          )}
+    {/* --- Contact Form (Formspree) --- */}
+    <form
+      action="https://formspree.io/f/xzzybgol"
+      method="POST"
+      style={{ width: "80%" }}
+    >
+      <div style={{ marginTop: 10 }}>
+        <h3>Name:</h3>
+        <input
+          type="text"
+          name="name"
+          placeholder="Your name"
+          style={{ width: "100%", padding: "8px" }}
+          required
+        />
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <h3>Company:</h3>
+        <input
+          type="text"
+          name="company"
+          placeholder="Your company"
+          style={{ width: "100%", padding: "8px" }}
+        />
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <h3>Email:</h3>
+        <input
+          type="email"
+          name="email"
+          placeholder="Your email"
+          style={{ width: "100%", padding: "8px" }}
+          required
+        />
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <h3>Phone:</h3>
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Your phone number"
+          style={{ width: "100%", padding: "8px" }}
+        />
+      </div>
+
+      <div style={{ marginTop: 10 }}>
+        <h3>Additional Notes:</h3>
+        <textarea
+          name="notes"
+          placeholder="Enter any special requirements..."
+          style={{ width: "100%", height: "100px", padding: "8px" }}
+        />
+      </div>
+
+      <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
+        <button
+          type="button"
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#1976d2",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+          onClick={() => setPage(2)}
+        >
+          Back
+        </button>
+
+        <button
+          type="submit"
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "green",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          Submit Quote
+        </button>
+      </div>
+    </form>
+  </>
+)}
         </div>
 
         {/* --- RIGHT SIDE (Preview + Summary) --- */}
