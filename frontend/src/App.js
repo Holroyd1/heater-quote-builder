@@ -32,6 +32,59 @@ function App() {
   const wattsNum = parseFloat(watts) || 0;
   const connectionLengthNum = parseFloat(connectionLength) || 0;
 
+// --- Reset helper for Page 1 (now clears Page 1 + 2 and returns to Page 1) ---
+const clearPage1 = () => {
+  // Reset Page 1
+  setVolts("");
+  setWatts("");
+  setWidth("200");
+  setLength("200");
+  setDiameter("200");
+  setInnerDiameter("100");
+  setShape("Rectangle");
+  setConnectionType("Cable");
+  setConnectionLength("0.3");
+
+  // Reset Page 2
+  setFixingAdhesive("No");
+  setSensors({ PT100: false, J: false, K: false });
+  setLimiterEnabled(false);
+  setLimiterTemp("");
+  setFoam("None");
+  setInitialQty("");
+  setAnnualQty("");
+
+  // Return user to Page 1
+  setPage(1);
+};
+
+// --- Reset helper for Page 2 (clears both Page 1 and 2, returns to Page 1) ---
+const clearPage2 = () => {
+  // Reset Page 1
+  setVolts("");
+  setWatts("");
+  setWidth("200");
+  setLength("200");
+  setDiameter("200");
+  setInnerDiameter("100");
+  setShape("Rectangle");
+  setConnectionType("Cable");
+  setConnectionLength("0.3");
+
+  // Reset Page 2
+  setFixingAdhesive("No");
+  setSensors({ PT100: false, J: false, K: false });
+  setLimiterEnabled(false);
+  setLimiterTemp("");
+  setFoam("None");
+  setInitialQty("");
+  setAnnualQty("");
+
+  // Return user to Page 1
+  setPage(1);
+};
+
+
   // --- Power Density ---
   let areaMM = 0;
   if (shape === "Rectangle") areaMM = widthNum * lengthNum;
@@ -180,24 +233,10 @@ function App() {
         <div style={{ flex: 1.2, paddingRight: 20 }}>
           {/* === PAGE 1 === */}
           {page === 1 && (
-            <>
-              <h1>Dimensions & Power</h1>
-              <h3>Material:</h3>
-              <button
-                style={{
-                  backgroundColor: "#1976d2",
-                  color: "white",
-                  border: "none",
-                  padding: "10px 20px",
-                  borderRadius: "4px",
-                  marginBottom: "20px",
-                }}
-              >
-                SILICONE
-              </button>
+  <>
+    <h1>Dimensions & Power</h1>
 
-              {/* Power */}
-   {/* --- Power Section --- */}
+   {/* --- Dimensions Section --- */}
 <div
   style={{
     backgroundColor: "white",
@@ -207,7 +246,182 @@ function App() {
     marginBottom: "24px",
   }}
 >
-  <h3 style={{ color: "#1976d2", marginBottom: "12px" }}>⚡ Power Configuration</h3>
+  <h3 style={{ color: "#E50520", marginBottom: "12px" }}> Dimensions</h3>
+
+  {/* Shape Selector */}
+  <div style={{ marginBottom: "14px" }}>
+    {["Rectangle", "Circle", "Donut"].map((option) => (
+      <label key={option} style={{ marginRight: "15px" }}>
+        <input
+          type="radio"
+          id={option}
+          name="shape"
+          checked={shape === option}
+          onChange={() => setShape(option)}
+        />
+        <span style={{ marginLeft: "5px" }}>{option}</span>
+      </label>
+    ))}
+  </div>
+
+  {/* Rectangle Controls */}
+  {shape === "Rectangle" && (
+    <>
+      <label style={{ fontWeight: "bold" }}>Width (mm):</label>
+      <div style={row}>
+        <input
+          type="range"
+          max="940"
+          value={width}
+          onChange={(e) => {
+            const w = parseFloat(e.target.value);
+            setWidth(e.target.value);
+            if (w > parseFloat(length)) setLength(e.target.value);
+          }}
+          style={slider}
+        />
+        <input
+          type="number"
+          value={width}
+          onChange={(e) => setWidth(e.target.value)}
+          onBlur={() => {
+            const w = parseFloat(width);
+            if (w > parseFloat(length)) setLength(width);
+          }}
+          style={{
+            width: "80px",
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
+
+      <label style={{ fontWeight: "bold" }}>Length (mm):</label>
+      <div style={row}>
+        <input
+          type="range"
+          max="3000"
+          value={length}
+          onChange={(e) => {
+            const l = parseFloat(e.target.value);
+            setLength(e.target.value);
+            if (l < parseFloat(width)) setWidth(e.target.value);
+          }}
+          style={slider}
+        />
+        <input
+          type="number"
+          value={length}
+          onChange={(e) => setLength(e.target.value)}
+          onBlur={() => {
+            const l = parseFloat(length);
+            if (l < parseFloat(width)) setWidth(length);
+          }}
+          style={{
+            width: "80px",
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
+    </>
+  )}
+
+  {/* Circle Controls */}
+  {shape === "Circle" && (
+    <div style={row}>
+      <label style={{ width: 110, fontWeight: "bold" }}>Diameter (mm):</label>
+      <input
+        type="range"
+        max="940"
+        value={diameter}
+        onChange={(e) => setDiameter(e.target.value)}
+        style={slider}
+      />
+      <input
+        type="text"
+        value={diameter}
+        onChange={(e) => setDiameter(e.target.value)}
+        style={{
+          width: "90px",
+          padding: "6px",
+          borderRadius: "6px",
+          border: "1px solid #ccc",
+        }}
+      />
+    </div>
+  )}
+
+  {/* Donut Controls */}
+  {shape === "Donut" && (
+    <>
+      <div style={row}>
+        <label style={{ width: 110, fontWeight: "bold" }}>Outer Dia. (mm):</label>
+        <input
+          type="range"
+          max="940"
+          value={diameter}
+          onChange={(e) => {
+            const d = parseFloat(e.target.value);
+            setDiameter(e.target.value);
+            if (d <= innerDiameterNum) setInnerDiameter((d - 10).toString());
+          }}
+          style={slider}
+        />
+        <input
+          type="text"
+          value={diameter}
+          onChange={(e) => {
+            const d = parseFloat(e.target.value);
+            setDiameter(e.target.value);
+            if (d <= innerDiameterNum) setInnerDiameter((d - 10).toString());
+          }}
+          style={{
+            width: "90px",
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
+      <div style={row}>
+        <label style={{ width: 110, fontWeight: "bold" }}>Inner Dia. (mm):</label>
+        <input
+          type="range"
+          max={diameter - 10}
+          value={innerDiameter}
+          onChange={(e) => setInnerDiameter(e.target.value)}
+          style={slider}
+        />
+        <input
+          type="text"
+          value={innerDiameter}
+          onChange={(e) => setInnerDiameter(e.target.value)}
+          style={{
+            width: "90px",
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
+    </>
+  )}
+</div>
+
+    {/* --- Power Section --- */}
+<div
+  style={{
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    padding: "20px",
+    marginBottom: "24px",
+  }}
+>
+  <h3 style={{ color: "#E50520", marginBottom: "12px" }}> Power Configuration</h3>
 
   <div
     style={{
@@ -262,9 +476,9 @@ function App() {
       borderRadius: "6px",
       marginTop: "16px",
       textAlign: "center",
-      color: "#1976d2",
+      color: "#333",
       fontWeight: "bold",
-      fontSize: "14px",
+      fontSize: "15px",
     }}
   >
     Power Density: {wattDensity} W/cm²
@@ -277,298 +491,318 @@ function App() {
   )}
 </div>
 
+   {/* --- Connection Section --- */}
+<div
+  style={{
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    padding: "20px",
+    marginBottom: "24px",
+  }}
+>
+  <h3 style={{ color: "#E50520", marginBottom: "12px" }}> Connection Type</h3>
 
-              <div style={{ marginBottom: "14px" }}>
-                <h3>Dimensions:</h3>
-                {["Rectangle", "Circle", "Donut"].map((option) => (
-                  <div key={option}>
-                    <input type="radio" id={option} name="shape" checked={shape === option} onChange={() => setShape(option)} />
-                    <label htmlFor={option} style={{ marginLeft: "5px" }}>{option}</label>
-                  </div>
-                ))}
-              </div>
+  {["Cable", "Leads"].map((type) => (
+    <label key={type} style={{ display: "block", marginBottom: "6px" }}>
+      <input
+        type="radio"
+        id={type}
+        name="connection"
+        checked={connectionType === type}
+        onChange={() => setConnectionType(type)}
+      />
+      <span style={{ marginLeft: "6px" }}>{type}</span>
+    </label>
+  ))}
 
-              {/* Rectangle */}
-              {shape === "Rectangle" && (
-                <>
-                  <label>Width (mm):</label>
-                  <div style={row}>
-                    <input
-                      type="range"
-                      max="940"
-                      value={width}
-                      onChange={(e) => {
-                        const w = parseFloat(e.target.value);
-                        setWidth(e.target.value);
-                        if (w > parseFloat(length)) setLength(e.target.value);
-                      }}
-                      style={slider}
-                    />
-                    <input
-                      type="number"
-                      value={width}
-                      onChange={(e) => setWidth(e.target.value)}
-                      onBlur={() => {
-                        const w = parseFloat(width);
-                        if (w > parseFloat(length)) setLength(width);
-                      }}
-                      style={{ width: "80px" }}
-                    />
-                  </div>
+  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px" }}>
+    <label style={{ width: 180, fontWeight: "bold" }}>Connection Length (m):</label>
+    <input
+      type="text"
+      value={connectionLength}
+      onChange={(e) => setConnectionLength(e.target.value)}
+      style={{
+        width: "90px",
+        padding: "6px",
+        border: "1px solid #ccc",
+        borderRadius: "6px",
+      }}
+    />
+  </div>
+</div>
 
-                  <label>Length (mm):</label>
-                  <div style={row}>
-                    <input
-                      type="range"
-                      max="3000"
-                      value={length}
-                      onChange={(e) => {
-                        const l = parseFloat(e.target.value);
-                        setLength(e.target.value);
-                        if (l < parseFloat(width)) setWidth(e.target.value);
-                      }}
-                      style={slider}
-                    />
-                    <input
-                      type="number"
-                      value={length}
-                      onChange={(e) => setLength(e.target.value)}
-                      onBlur={() => {
-                        const l = parseFloat(length);
-                        if (l < parseFloat(width)) setWidth(length);
-                      }}
-                      style={{ width: "80px" }}
-                    />
-                  </div>
-                </>
-              )}
+    <div style={{ display: "flex", gap: "10px" }}>
+      <button
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#f44336",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+        }}
+        onClick={clearPage1}
+      >
+        Clear
+      </button>
 
-              {/* Circle */}
-              {shape === "Circle" && (
-                <div style={row}>
-                  <label style={{ width: 110 }}>Diameter (mm):</label>
-                  <input type="range" max="940" value={diameter} onChange={(e) => setDiameter(e.target.value)} style={slider} />
-                  <input type="text" value={diameter} onChange={(e) => setDiameter(e.target.value)} style={{ width: 90 }} />
-                </div>
-              )}
+      <button
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#1976d2",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+        }}
+        onClick={() => setPage(2)}
+      >
+        Next: Add-Ons
+      </button>
+    </div>
+  </>
+)}   {/* ← this closes the Page 1 section properly */}
+        {/* === PAGE 2 === */}
+{page === 2 && (
+  <>
+    <h1>Add-Ons</h1>
 
-              {/* Donut */}
-              {shape === "Donut" && (
-                <>
-                  <div style={row}>
-                    <label style={{ width: 110 }}>Outer Dia. (mm):</label>
-                    <input
-                      type="range"
-                      max="940"
-                      value={diameter}
-                      onChange={(e) => {
-                        const d = parseFloat(e.target.value);
-                        setDiameter(e.target.value);
-                        if (d <= innerDiameterNum) setInnerDiameter((d - 10).toString());
-                      }}
-                      style={slider}
-                    />
-                    <input
-                      type="text"
-                      value={diameter}
-                      onChange={(e) => {
-                        const d = parseFloat(e.target.value);
-                        setDiameter(e.target.value);
-                        if (d <= innerDiameterNum) setInnerDiameter((d - 10).toString());
-                      }}
-                      style={{ width: 90 }}
-                    />
-                  </div>
-                  <div style={row}>
-                    <label style={{ width: 110 }}>Inner Dia. (mm):</label>
-                    <input type="range" max={diameter - 10} value={innerDiameter} onChange={(e) => setInnerDiameter(e.target.value)} style={slider} />
-                    <input type="text" value={innerDiameter} onChange={(e) => setInnerDiameter(e.target.value)} style={{ width: 90 }} />
-                  </div>
-                </>
-              )}
+    {/* --- Add-Ons Card --- */}
+    <div
+      style={{
+        backgroundColor: "white",
+        borderRadius: "10px",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+        padding: "20px",
+        marginBottom: "24px",
+      }}
+    >
+      {/* Self Adhesive */}
+      <div style={{ marginBottom: "20px" }}>
+        <h3 style={{ color: "#E50520", marginBottom: "8px" }}>Self Adhesive</h3>
+        {["Yes", "No"].map((option) => (
+          <label key={option} style={{ marginRight: "20px" }}>
+            <input
+              type="radio"
+              name="adhesive"
+              checked={fixingAdhesive === option}
+              onChange={() => setFixingAdhesive(option)}
+            />{" "}
+            {option}
+          </label>
+        ))}
+      </div>
 
-              {/* Connection */}
-              <div style={{ marginTop: "20px" }}>
-                <h3>Connection Type:</h3>
-                {["Cable", "Leads"].map((type) => (
-                  <div key={type}>
-                    <input type="radio" id={type} name="connection" checked={connectionType === type} onChange={() => setConnectionType(type)} />
-                    <label htmlFor={type} style={{ marginLeft: 6 }}>{type}</label>
-                  </div>
-                ))}
-                <div style={row}>
-                  <label>Connection Length (m):</label>
-                  <input type="text" value={connectionLength} onChange={(e) => setConnectionLength(e.target.value)} style={{ width: 90 }} />
-                </div>
-              </div>
+      {/* Sensors */}
+      <div style={{ marginBottom: "20px" }}>
+        <h3 style={{ color: "#E50520", marginBottom: "8px" }}>Sensors</h3>
+        <label style={{ marginRight: 10 }}>
+          <input
+            type="checkbox"
+            checked={sensors.PT100}
+            onChange={() => setSensors({ ...sensors, PT100: !sensors.PT100 })}
+          />{" "}
+          PT100
+        </label>
+        <label style={{ marginRight: 10 }}>
+          <input
+            type="checkbox"
+            checked={sensors.J}
+            onChange={() => setSensors({ ...sensors, J: !sensors.J })}
+          />{" "}
+          Thermocouple J
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={sensors.K}
+            onChange={() => setSensors({ ...sensors, K: !sensors.K })}
+          />{" "}
+          Thermocouple K
+        </label>
+      </div>
 
-              <button
-                style={{
-                  padding: "10px 20px",
-                  backgroundColor: "#1976d2",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  marginTop: "20px",
-                }}
-                onClick={() => setPage(2)}
-              >
-                Next: Add-Ons
-              </button>
-            </>
-          )}
+      {/* Limiter */}
+      <div style={{ marginBottom: "20px" }}>
+        <h3 style={{ color: "#E50520", marginBottom: "8px" }}>Limiter</h3>
+        <label>
+          <input
+            type="checkbox"
+            checked={limiterEnabled}
+            onChange={() => setLimiterEnabled(!limiterEnabled)}
+          />{" "}
+          Yes
+        </label>
+        {limiterEnabled && (
+          <>
+            <input
+              type="number"
+              value={limiterTemp}
+              onChange={(e) => setLimiterTemp(e.target.value)}
+              placeholder="Temperature"
+              style={{
+                marginLeft: 10,
+                width: 90,
+                padding: "6px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+              }}
+            />
+            <span style={{ marginLeft: 5 }}>°C</span>
+          </>
+        )}
+      </div>
 
-          {/* === PAGE 2 === */}
-          {page === 2 && (
-            <>
-              <h1>Add-Ons</h1>
-              <div style={{ marginTop: 10 }}>
-                <h3>Self Adhesive:</h3>
-                {["Yes", "No"].map((option) => (
-                  <label key={option} style={{ marginRight: "20px" }}>
-                    <input
-                      type="radio"
-                      name="adhesive"
-                      checked={fixingAdhesive === option}
-                      onChange={() => setFixingAdhesive(option)}
-                    />
-                    {option}
-                  </label>
-                ))}
-              </div>
+      {/* Foam */}
+      <div>
+        <h3 style={{ color: "#E50520", marginBottom: "8px" }}>Foam</h3>
+        {["None", "3mm", "5mm", "8mm", "12mm"].map((f) => (
+          <label key={f} style={{ marginRight: 12 }}>
+            <input
+              type="radio"
+              name="foam"
+              checked={foam === f}
+              onChange={() => setFoam(f)}
+            />{" "}
+            {f === "None" ? "No Foam" : f}
+          </label>
+        ))}
+      </div>
+    </div>
 
-              <div style={{ marginTop: 10 }}>
-                <h3>Sensors:</h3>
-                <label style={{ marginRight: 10 }}>
-                  <input
-                    type="checkbox"
-                    checked={sensors.PT100}
-                    onChange={() => setSensors({ ...sensors, PT100: !sensors.PT100 })}
-                  />{" "}
-                  PT100
-                </label>
-                <label style={{ marginRight: 10 }}>
-                  <input
-                    type="checkbox"
-                    checked={sensors.J}
-                    onChange={() => setSensors({ ...sensors, J: !sensors.J })}
-                  />{" "}
-                  Thermocouple J
-                </label>
-                <label style={{ marginRight: 10 }}>
-                  <input
-                    type="checkbox"
-                    checked={sensors.K}
-                    onChange={() => setSensors({ ...sensors, K: !sensors.K })}
-                  />{" "}
-                  Thermocouple K
-                </label>
-              </div>
+    {/* --- Quantity Requirements Card --- */}
+    <div
+      style={{
+        backgroundColor: "white",
+        borderRadius: "10px",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+        padding: "20px",
+        marginBottom: "24px",
+      }}
+    >
+      <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
+        Quantity Requirements
+      </h3>
 
-              <div style={{ marginTop: 10 }}>
-                <h3>Limiter:</h3>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={limiterEnabled}
-                    onChange={() => setLimiterEnabled(!limiterEnabled)}
-                  />{" "}
-                  Yes
-                </label>
-                {limiterEnabled && (
-                  <>
-                    <input
-                      type="number"
-                      value={limiterTemp}
-                      onChange={(e) => setLimiterTemp(e.target.value)}
-                      placeholder="Temperature"
-                      style={{ marginLeft: 10, width: 90 }}
-                    />
-                    <span style={{ marginLeft: 5 }}>°C</span>
-                  </>
-                )}
-              </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "12px",
+        }}
+      >
+        <label style={{ width: 190, fontWeight: "bold" }}>
+          Initial Quantity:
+        </label>
+        <input
+          type="number"
+          value={initialQty}
+          onChange={(e) => setInitialQty(e.target.value)}
+          style={{
+            width: 120,
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
 
-              <div style={{ marginTop: 10 }}>
-                <h3>Foam:</h3>
-                {["None", "3mm", "5mm", "8mm", "12mm"].map((f) => (
-                  <label key={f} style={{ marginRight: 10 }}>
-                    <input
-                      type="radio"
-                      name="foam"
-                      checked={foam === f}
-                      onChange={() => setFoam(f)}
-                    />{" "}
-                    {f === "None" ? "No Foam" : f}
-                  </label>
-                ))}
-              </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <label style={{ width: 190, fontWeight: "bold" }}>
+          Est. Annual Quantity (optional):
+        </label>
+        <input
+          type="number"
+          value={annualQty}
+          onChange={(e) => setAnnualQty(e.target.value)}
+          style={{
+            width: 120,
+            padding: "6px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
+    </div>
 
-              <div style={{ marginTop: 20 }}>
-                <h3>Quantity Requirements:</h3>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                  <label style={{ width: 190 }}>Initial Quantity:</label>
-                  <input type="number" value={initialQty} onChange={(e) => setInitialQty(e.target.value)} style={{ width: 120 }} />
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <label style={{ width: 190 }}>Est. Annual Quantity (optional):</label>
-                  <input type="number" value={annualQty} onChange={(e) => setAnnualQty(e.target.value)} style={{ width: 120 }} />
-                </div>
-              </div>
+    {/* --- Navigation Buttons --- */}
+    <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+  <button
+    style={{
+      padding: "10px 20px",
+      backgroundColor: "#f44336",
+      color: "white",
+      border: "none",
+      borderRadius: "6px",
+    }}
+    onClick={clearPage2}
+  >
+    Clear All
+  </button>
 
-              <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
-                <button
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#1976d2",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                  onClick={() => setPage(1)}
-                >
-                  Back
-                </button>
-                <button
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#1976d2",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                  }}
-                  onClick={() => setPage(3)}
-                >
-                  Continue to Contact Info
-                </button>
-              </div>
-            </>
-          )}
+  <button
+    style={{
+      padding: "10px 20px",
+      backgroundColor: "#1976d2",
+      color: "white",
+      border: "none",
+      borderRadius: "6px",
+    }}
+    onClick={() => setPage(1)}
+  >
+    Back
+  </button>
 
-          {/* === PAGE 3 === */}
+  <button
+    style={{
+      padding: "10px 20px",
+      backgroundColor: "#1976d2",
+      color: "white",
+      border: "none",
+      borderRadius: "6px",
+    }}
+    onClick={() => setPage(3)}
+  >
+    Continue to Contact Info
+  </button>
+</div>
+  </>
+)}
+
+{/* === PAGE 3 === */}
 {page === 3 && (
   <>
     <h1>Contact Information</h1>
-
-    {/* --- Contact Form (Formspree) --- */}
     <form
       action="https://formspree.io/f/xzzybgol"
       method="POST"
-      style={{ width: "80%" }}
+      style={{
+        backgroundColor: "white",
+        borderRadius: "10px",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+        padding: "20px",
+        width: "85%",
+      }}
     >
       <div style={{ marginTop: 10 }}>
-        <h3>Name:</h3>
+        <h3 style={{ color: "#E50520" }}>Name:</h3>
         <input
           type="text"
           name="name"
           placeholder="Your name"
-          style={{ width: "100%", padding: "8px" }}
           required
+          style={{ width: "100%", padding: "8px" }}
         />
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <h3>Company:</h3>
+        <h3 style={{ color: "#E50520" }}>Company:</h3>
         <input
           type="text"
           name="company"
@@ -578,18 +812,18 @@ function App() {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <h3>Email:</h3>
+        <h3 style={{ color: "#E50520" }}>Email:</h3>
         <input
           type="email"
           name="email"
           placeholder="Your email"
-          style={{ width: "100%", padding: "8px" }}
           required
+          style={{ width: "100%", padding: "8px" }}
         />
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <h3>Phone:</h3>
+        <h3 style={{ color: "#E50520" }}>Phone:</h3>
         <input
           type="tel"
           name="phone"
@@ -599,7 +833,7 @@ function App() {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <h3>Additional Notes:</h3>
+        <h3 style={{ color: "#E50520" }}>Additional Notes:</h3>
         <textarea
           name="notes"
           placeholder="Enter any special requirements..."
@@ -621,7 +855,6 @@ function App() {
         >
           Back
         </button>
-
         <button
           type="submit"
           style={{
@@ -638,6 +871,7 @@ function App() {
     </form>
   </>
 )}
+
         </div>
 
         {/* --- RIGHT SIDE (Preview + Summary) --- */}
@@ -709,60 +943,61 @@ function App() {
                     )
                   )}
 
-                  {/* Limiter patch (doughnut ring) */}
-                  {limiterEnabled && (
-                    shape === "Donut" ? (
-                      // DONUT: limiter at right mid-radius
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: patchWidth * 0.9,
-                          height: patchWidth * 0.9,
-                          borderRadius: "50%",
-                          backgroundColor: "transparent",
-                          boxShadow: `inset 0 0 0 ${patchWidth * 0.22}px #b22222`,
-                          border: `${patchWidth * 0.03}px solid #800000`,
-                          left: `${donutLimiterLeftPx}px`,
-                          top: `${centerY}px`,
-                          transform: "translate(-50%,-50%)",
-                          zIndex: 3,
-                        }}
-                      />
-                    ) : (
-                      // Other shapes: above termination patch
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: patchWidth * 0.9,
-                          height: patchWidth * 0.9,
-                          borderRadius: "50%",
-                          backgroundColor: "transparent",
-                          boxShadow: `inset 0 0 0 ${patchWidth * 0.22}px #b22222`,
-                          border: `${patchWidth * 0.03}px solid #800000`,
-                          bottom: patchHeight + 15,
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          zIndex: 3,
-                        }}
-                      />
-                    )
-                  )}
+                  {/* Limiter patch (solid circle just above termination patch) */}
+{limiterEnabled && (
+  shape === "Donut" ? (
+    // DONUT: limiter at right mid-radius
+    <div
+      style={{
+        position: "absolute",
+        width: patchWidth * 0.9,
+        height: patchWidth * 0.9,
+        borderRadius: "50%",
+        backgroundColor: "#b22222",
+        border: `1px solid #800000`,
+        left: `${donutLimiterLeftPx}px`,
+        top: `${centerY}px`,
+        transform: "translate(-50%,-50%)",
+        zIndex: 3,
+      }}
+    />
+  ) : (
+    // Other shapes: directly above termination patch, visually snug
+    <div
+      style={{
+        position: "absolute",
+        width: patchWidth * 0.9,
+        height: patchWidth * 0.9,
+        borderRadius: "50%",
+        backgroundColor: "#b22222",
+        border: "1px solid #800000",
+        bottom: patchHeight + 4 * scale, // ✅ brings it closer to termination patch
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 3,
+      }}
+    />
+  )
+)}
 
-                  {/* Termination patch (bottom center) */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      width: patchWidth,
-                      height: patchHeight,
-                      backgroundColor: "#b22222",
-                      bottom: 0,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      border: "1px solid #800000",
-                      zIndex: 2,
-                    }}
-                  />
-                </>
+
+{/* Termination patch (visually flush with heater bottom, stable across scale) */}
+<div
+  style={{
+    position: "absolute",
+    width: patchWidth,
+    height: patchHeight,
+    backgroundColor: "#b22222",
+    left: "50%",
+    bottom: `${(patchWidth - patchHeight) / 2}px`,  // ✅ gentle upward correction
+    transform: "translateX(-50%) rotate(90deg)",
+    transformOrigin: "center",
+    border: "1px solid #800000",
+    zIndex: 2,
+  }}
+/>
+
+               </>
               )}
 
               {/* Cable or leads always visible */}
@@ -780,32 +1015,36 @@ function App() {
                   }}
                 />
               )}
-              {connectionType === "Leads" && (
-                <>
-                  <div
-                    style={{
-                      position: "absolute",
-                      width: leadThickness,
-                      height: leadLength,
-                      backgroundColor: "black",
-                      bottom: -leadLength,
-                      left: `calc(50% - ${leadSpacing / 2}px)`,
-                      zIndex: 4,
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      width: leadThickness,
-                      height: leadLength,
-                      backgroundColor: "black",
-                      bottom: -leadLength,
-                      left: `calc(50% + ${leadSpacing / 2}px)`,
-                      zIndex: 4,
-                    }}
-                  />
-                </>
-              )}
+{connectionType === "Leads" && (
+  <>
+    {/* Left lead */}
+    <div
+      style={{
+        position: "absolute",
+        width: leadThickness,
+        height: leadLength,
+        backgroundColor: "black",
+        bottom: -leadLength + 1 * scale, // keeps contact tight with patch
+        left: "50%",
+        transform: `translateX(-${leadSpacing / 2 + leadThickness / 2}px)`,
+        zIndex: 4,
+      }}
+    />
+    {/* Right lead */}
+    <div
+      style={{
+        position: "absolute",
+        width: leadThickness,
+        height: leadLength,
+        backgroundColor: "black",
+        bottom: -leadLength + 1 * scale,
+        left: "50%",
+        transform: `translateX(${leadSpacing / 2 - leadThickness / 2}px)`,
+        zIndex: 4,
+      }}
+    />
+  </>
+)}
 
               {/* Labels */}
               {shape === "Rectangle" && (
@@ -831,7 +1070,7 @@ function App() {
               </div>
             )}
 
-            <div style={{ marginTop: patchHeight + 40, fontSize: "12px", color: "gray" }}>
+            <div style={{ marginTop: patchHeight + 40, fontSize: "14px", color: "#333",fontWeight: "bold" }}>
               Connection Length: {connectionLengthNum.toFixed(1)} m
             </div>
 
@@ -848,7 +1087,7 @@ function App() {
                 color: "#333",
               }}
             >
-              <h4 style={{ marginBottom: "10px", color: "#1976d2" }}>Heater Summary</h4>
+              <h4 style={{ marginBottom: "10px", color: "#E50520",  fontSize: "18px" }}>Heater Summary</h4>
               <p><strong>Dimensions:</strong> {shape}</p>
               {shape === "Rectangle" && <p><strong>Size:</strong> {widthNum} mm × {lengthNum} mm</p>}
               {shape === "Circle" && <p><strong>Diameter:</strong> Ø {diameterNum} mm</p>}
