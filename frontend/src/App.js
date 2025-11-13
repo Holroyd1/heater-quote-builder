@@ -23,6 +23,8 @@ const selectedSensors = Object.keys(sensors).filter(key => sensors[key]);
   const [foam, setFoam] = useState("None");
   const [initialQty, setInitialQty] = useState("");
   const [annualQty, setAnnualQty] = useState("");
+const [notes, setNotes] = useState("");
+
 
   // --- Numeric conversions ---
   const widthNum = parseFloat(width) || 0;
@@ -875,16 +877,16 @@ const foamPx = foam !== "None"
 {page === 3 && (
   <>
     <h1
-  style={{
-    color: "#E50520",
-    fontSize: "26px",
-    marginBottom: "20px",
-    fontWeight: "bold",
-    textAlign: "left",
-  }}
->
-  Contact Information
-</h1>
+      style={{
+        color: "#E50520",
+        fontSize: "26px",
+        marginBottom: "20px",
+        fontWeight: "bold",
+        textAlign: "left",
+      }}
+    >
+      Contact Information
+    </h1>
 
     <form
       action="https://formspree.io/f/xzzybgol"
@@ -897,6 +899,41 @@ const foamPx = foam !== "None"
         width: "85%",
       }}
     >
+      {/* Single formatted message sent to Formspree */}
+      <input
+        type="hidden"
+        name="message"
+        value={`
+--- DIMENSIONS ---
+Shape: ${shape}
+${shape === "Rectangle" ? `Width: ${widthNum} mm\nLength: ${lengthNum} mm` : ""}
+${shape === "Circle" ? `Diameter: ${diameterNum} mm` : ""}
+${shape === "Donut" ? `Outer Diameter: ${diameterNum} mm\nInner Diameter: ${innerDiameterNum} mm` : ""}
+
+--- POWER ---
+Voltage: ${voltsNum} V
+Wattage: ${wattsNum} W
+Power Density: ${wattDensity} W/cm²
+
+--- CONNECTION ---
+Type: ${connectionType}
+Length: ${connectionLengthNum.toFixed(1)} m
+
+--- ADD-ONS ---
+Adhesive: ${fixingAdhesive}
+Foam: ${foam}
+Sensors: ${selectedSensors.length > 0 ? selectedSensors.join(", ") : "None"}
+Limiter: ${limiterEnabled ? `${limiterTemp} °C` : "No"}
+
+--- QUANTITIES ---
+Initial Qty: ${initialQty || "Not specified"}
+Annual Qty: ${annualQty || "Not specified"}
+
+--- CUSTOMER NOTES ---
+${notes || "None"}
+        `}
+      />
+
       <div style={{ marginTop: 10 }}>
         <h3 style={{ color: "#E50520" }}>Name:</h3>
         <input
@@ -942,10 +979,12 @@ const foamPx = foam !== "None"
       <div style={{ marginTop: 10 }}>
         <h3 style={{ color: "#E50520" }}>Additional Notes:</h3>
         <textarea
-          name="notes"
           placeholder="Enter any special requirements..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
           style={{ width: "100%", height: "100px", padding: "8px" }}
         />
+        {/* ⬆️ No name="notes" on purpose – we include it inside message instead */}
       </div>
 
       <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
