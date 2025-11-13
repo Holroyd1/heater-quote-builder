@@ -137,7 +137,6 @@ const clearPage2 = () => {
   const midRpx = innerRpx + (outerRpx - innerRpx) / 2;
 
   // Positions for donut patches (left/right on mid-radius)
-  const donutSensorLeftPx = centerX - midRpx;
   const donutLimiterLeftPx = centerX + midRpx;
 
   const row = { display: "flex", alignItems: "center", gap: "10px", margin: "6px 0" };
