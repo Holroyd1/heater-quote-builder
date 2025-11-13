@@ -17,6 +17,7 @@ function App() {
   // --- Page 2 States ---
   const [fixingAdhesive, setFixingAdhesive] = useState("No");
   const [sensors, setSensors] = useState({ PT100: false, J: false, K: false });
+const selectedSensors = Object.keys(sensors).filter(key => sensors[key]);
   const [limiterEnabled, setLimiterEnabled] = useState(false);
   const [limiterTemp, setLimiterTemp] = useState("");
   const [foam, setFoam] = useState("None");
@@ -142,8 +143,78 @@ const clearPage2 = () => {
   const row = { display: "flex", alignItems: "center", gap: "10px", margin: "6px 0" };
   const slider = { flex: 1 };
 
+// Side-view helpers with diminishing visual scaling for thicker foam
+const foamPx = foam !== "None"
+  ? 6 + parseInt(foam, 10) * 1.5 - Math.min(parseInt(foam, 10), 8) * 0.4
+  : 0;
+
   return (
     <div style={{ fontFamily: "Arial", position: "relative", paddingTop: "84px" }}>
+    <style>{`
+      /* Red slider styling */
+      .range-red { accent-color: #E50520; }
+
+      .range-red {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        background: transparent;
+      }
+
+      /* Chrome / Edge / Safari */
+      .range-red::-webkit-slider-runnable-track {
+        height: 4px;
+        background: #f3c2c2;
+        border-radius: 2px;
+      }
+      .range-red::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        margin-top: -6px;
+        border-radius: 50%;
+        background: #E50520;
+        border: 2px solid #b21b1b;
+        cursor: pointer;
+      }
+
+      /* Firefox */
+      .range-red::-moz-range-track {
+        height: 4px;
+        background: #f3c2c2;
+        border-radius: 2px;
+      }
+      .range-red::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #E50520;
+        border: 2px solid #b21b1b;
+        cursor: pointer;
+      }
+
+      /* Optional: legacy fallback */
+      .range-red::-ms-track {
+        height: 4px;
+        background: transparent;
+        border-color: transparent;
+        color: transparent;
+      }
+      .range-red::-ms-fill-lower,
+      .range-red::-ms-fill-upper {
+        background: #f3c2c2;
+        border-radius: 2px;
+      }
+      .range-red::-ms-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #E50520;
+        border: 2px solid #b21b1b;
+        cursor: pointer;
+      }
+    `}</style>
+
       {/* --- Step Bar --- */}
       <div
         style={{
@@ -234,7 +305,18 @@ const clearPage2 = () => {
           {/* === PAGE 1 === */}
           {page === 1 && (
   <>
-    <h1>Dimensions & Power</h1>
+    <h1
+  style={{
+    color: "#E50520",         // red to match your theme
+    fontSize: "26px",         // slightly larger
+    marginBottom: "20px",
+    fontWeight: "bold",
+    textAlign: "left",        // change to "center" if you prefer
+  }}
+>
+  Dimensions & Power
+</h1>
+
 
    {/* --- Dimensions Section --- */}
 <div
@@ -270,16 +352,17 @@ const clearPage2 = () => {
       <label style={{ fontWeight: "bold" }}>Width (mm):</label>
       <div style={row}>
         <input
-          type="range"
-          max="940"
-          value={width}
-          onChange={(e) => {
-            const w = parseFloat(e.target.value);
-            setWidth(e.target.value);
-            if (w > parseFloat(length)) setLength(e.target.value);
-          }}
-          style={slider}
-        />
+  type="range"
+  className="range-red"
+  max="940"
+  value={width}
+  onChange={(e) => {
+    const w = parseFloat(e.target.value);
+    setWidth(e.target.value);
+    if (w > parseFloat(length)) setLength(e.target.value);
+  }}
+  style={slider}
+/>
         <input
           type="number"
           value={width}
@@ -299,17 +382,18 @@ const clearPage2 = () => {
 
       <label style={{ fontWeight: "bold" }}>Length (mm):</label>
       <div style={row}>
-        <input
-          type="range"
-          max="3000"
-          value={length}
-          onChange={(e) => {
-            const l = parseFloat(e.target.value);
-            setLength(e.target.value);
-            if (l < parseFloat(width)) setWidth(e.target.value);
-          }}
-          style={slider}
-        />
+       <input
+  type="range"
+  className="range-red"
+  max="3000"
+  value={length}
+  onChange={(e) => {
+    const l = parseFloat(e.target.value);
+    setLength(e.target.value);
+    if (l < parseFloat(width)) setWidth(e.target.value);
+  }}
+  style={slider}
+/>
         <input
           type="number"
           value={length}
@@ -333,13 +417,14 @@ const clearPage2 = () => {
   {shape === "Circle" && (
     <div style={row}>
       <label style={{ width: 110, fontWeight: "bold" }}>Diameter (mm):</label>
-      <input
-        type="range"
-        max="940"
-        value={diameter}
-        onChange={(e) => setDiameter(e.target.value)}
-        style={slider}
-      />
+     <input
+  type="range"
+  className="range-red"
+  max="940"
+  value={diameter}
+  onChange={(e) => setDiameter(e.target.value)}
+  style={slider}
+/>
       <input
         type="text"
         value={diameter}
@@ -360,16 +445,17 @@ const clearPage2 = () => {
       <div style={row}>
         <label style={{ width: 110, fontWeight: "bold" }}>Outer Dia. (mm):</label>
         <input
-          type="range"
-          max="940"
-          value={diameter}
-          onChange={(e) => {
-            const d = parseFloat(e.target.value);
-            setDiameter(e.target.value);
-            if (d <= innerDiameterNum) setInnerDiameter((d - 10).toString());
-          }}
-          style={slider}
-        />
+  type="range"
+  className="range-red"
+  max="940"
+  value={diameter}
+  onChange={(e) => {
+    const d = parseFloat(e.target.value);
+    setDiameter(e.target.value);
+    if (d <= innerDiameterNum) setInnerDiameter((d - 10).toString());
+  }}
+  style={slider}
+/>
         <input
           type="text"
           value={diameter}
@@ -389,12 +475,13 @@ const clearPage2 = () => {
       <div style={row}>
         <label style={{ width: 110, fontWeight: "bold" }}>Inner Dia. (mm):</label>
         <input
-          type="range"
-          max={diameter - 10}
-          value={innerDiameter}
-          onChange={(e) => setInnerDiameter(e.target.value)}
-          style={slider}
-        />
+  type="range"
+  className="range-red"
+  max={diameter - 10}
+  value={innerDiameter}
+  onChange={(e) => setInnerDiameter(e.target.value)}
+  style={slider}
+/>
         <input
           type="text"
           value={innerDiameter}
@@ -564,7 +651,17 @@ const clearPage2 = () => {
         {/* === PAGE 2 === */}
 {page === 2 && (
   <>
-    <h1>Add-Ons</h1>
+    <h1
+  style={{
+    color: "#E50520",
+    fontSize: "26px",
+    marginBottom: "20px",
+    fontWeight: "bold",
+    textAlign: "left",
+  }}
+>
+  Add-Ons
+</h1>
 
     {/* --- Add-Ons Card --- */}
     <div
@@ -778,7 +875,18 @@ const clearPage2 = () => {
 {/* === PAGE 3 === */}
 {page === 3 && (
   <>
-    <h1>Contact Information</h1>
+    <h1
+  style={{
+    color: "#E50520",
+    fontSize: "26px",
+    marginBottom: "20px",
+    fontWeight: "bold",
+    textAlign: "left",
+  }}
+>
+  Contact Information
+</h1>
+
     <form
       action="https://formspree.io/f/xzzybgol"
       method="POST"
@@ -907,41 +1015,61 @@ const clearPage2 = () => {
               {!foamActive && (
                 <>
                   {/* Sensor patch */}
-                  {(sensors.PT100 || sensors.J || sensors.K) && (
-                    shape === "Donut" ? (
-                      // DONUT: sensor at left mid-radius
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: patchWidth * 0.8,
-                          height: patchHeight * 0.8,
-                          backgroundColor: "#b22222",
-                          left: `${donutSensorLeftPx}px`,
-                          top: `${centerY}px`,
-                          transform: "translate(-50%,-50%)",
-                          border: "1px solid #800000",
-                          borderRadius: "2px",
-                          zIndex: 3,
-                        }}
-                      />
-                    ) : (
-                      // Other shapes: centered
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: patchWidth * 0.8,
-                          height: patchHeight * 0.8,
-                          backgroundColor: "#b22222",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%,-50%)",
-                          border: "1px solid #800000",
-                          borderRadius: "2px",
-                          zIndex: 3,
-                        }}
-                      />
-                    )
-                  )}
+                  {/* Multi-sensor patches */}
+{selectedSensors.length > 0 && !foamActive && (
+  <>
+    {selectedSensors.map((sensor, index) => {
+      // spacing offset
+      const total = selectedSensors.length;
+      const offset = (index - (total - 1) / 2) * (patchWidth * 1.2);
+
+      if (shape === "Donut") {
+        // evenly position around mid-radius arc
+        const angle = (index / total) * Math.PI - Math.PI / 2; 
+        const x = centerX + Math.cos(angle) * midRpx;
+        const y = centerY + Math.sin(angle) * midRpx;
+
+        return (
+          <div
+            key={sensor}
+            style={{
+              position: "absolute",
+              width: patchWidth * 0.8,
+              height: patchHeight * 0.8,
+              backgroundColor: "#b22222",
+              left: x,
+              top: y,
+              transform: "translate(-50%, -50%)",
+              border: "1px solid #800000",
+              borderRadius: "2px",
+              zIndex: 3,
+            }}
+          />
+        );
+      }
+
+      // Rectangle & Circle → horizontal spacing
+      return (
+        <div
+          key={sensor}
+          style={{
+            position: "absolute",
+            width: patchWidth * 0.8,
+            height: patchHeight * 0.8,
+            backgroundColor: "#b22222",
+            top: "50%",
+            left: `calc(50% + ${offset}px)`,
+            transform: "translate(-50%, -50%)",
+            border: "1px solid #800000",
+            borderRadius: "2px",
+            zIndex: 3,
+          }}
+        />
+      );
+    })}
+  </>
+)}
+
 
                   {/* Limiter patch (solid circle just above termination patch) */}
 {limiterEnabled && (
@@ -1073,6 +1201,80 @@ const clearPage2 = () => {
             <div style={{ marginTop: patchHeight + 40, fontSize: "14px", color: "#333",fontWeight: "bold" }}>
               Connection Length: {connectionLengthNum.toFixed(1)} m
             </div>
+{/* --- Side View --- */}
+{(foam !== "None" || fixingAdhesive === "Yes") && (
+  <div style={{ marginTop: "30px" }}>
+    <h4 style={{ color: "#E50520", marginBottom: "8px", textAlign: "center" }}>
+      Side View
+    </h4>
+
+    <div
+      style={{
+        position: "relative",
+        width: 220,
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Foam layer (top) */}
+      {foam !== "None" && (
+        <div
+          style={{
+            height: foamPx,
+            width: "100%",
+            backgroundColor: "#d3d3d3",
+            boxSizing: "border-box",
+          }}
+        />
+      )}
+
+      {/* Join line between foam & heater */}
+      {foam !== "None" && (
+        <div
+          style={{
+            height: 2,
+            width: "100%",
+            backgroundColor: "#8B0000",
+            marginTop: -2,
+          }}
+        />
+      )}
+
+      {/* Heater layer (fixed ~1.5 mm visual) */}
+      <div
+        style={{
+          height: 3,
+          width: "100%",
+          backgroundColor: "#8B0000",
+          boxSizing: "border-box",
+        }}
+      />
+
+      {/* Adhesive layer (optional; thinner + new color) */}
+      {fixingAdhesive === "Yes" && (
+        <div
+          style={{
+            height: 2,                // slightly thinner
+            width: "100%",
+            backgroundColor: "#b38f5a", // warmer adhesive color
+            boxSizing: "border-box",
+          }}
+        />
+      )}
+    </div>
+
+    {/* Description under the side view */}
+    <p style={{ fontSize: 12, marginTop: 6, color: "#333", textAlign: "center" }}>
+      {foam !== "None"
+        ? `Foam (${foam}) on top of heater${fixingAdhesive === "Yes" ? ", with adhesive backing." : "."}`
+        : fixingAdhesive === "Yes"
+        ? "Heater with adhesive backing."
+        : "No additional layers applied."}
+    </p>
+  </div>
+)}
 
             {/* --- Summary --- */}
             <div
