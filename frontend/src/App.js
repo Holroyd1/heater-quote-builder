@@ -249,20 +249,20 @@ const foamPx = foam !== "None"
                 onClick={() => setPage(step.num)}
                 style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
               >
-                <div
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: "50%",
-                    backgroundColor: page === step.num ? "#E50520" : "#cfcfcf",
-                    color: page === step.num ? "#E50520" : "#666",
-                    color: "white",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                  }}
-                >
+               <div
+  style={{
+    width: 28,
+    height: 28,
+    borderRadius: "50%",
+    backgroundColor: page === step.num ? "#E50520" : "#cfcfcf",
+    color: "white",  // keep this
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "bold",
+  }}
+>
+
                   {step.num}
                 </div>
                 <span
