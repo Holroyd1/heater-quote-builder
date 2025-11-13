@@ -254,7 +254,8 @@ const foamPx = foam !== "None"
                     width: 28,
                     height: 28,
                     borderRadius: "50%",
-                    backgroundColor: page === step.num ? "#1976d2" : "#cfcfcf",
+                    backgroundColor: page === step.num ? "#E50520" : "#cfcfcf",
+                    color: page === step.num ? "#E50520" : "#666",
                     color: "white",
                     display: "flex",
                     alignItems: "center",
@@ -267,7 +268,7 @@ const foamPx = foam !== "None"
                 <span
                   style={{
                     marginLeft: 8,
-                    color: page === step.num ? "#1976d2" : "#666",
+                    color: page === step.num ? "#E50520" : "#666",
                     fontWeight: page === step.num ? "bold" : "normal",
                   }}
                 >
@@ -280,7 +281,7 @@ const foamPx = foam !== "None"
                     width: 120,
                     height: 2,
                     backgroundColor:
-                      page >= arr[idx + 1].num ? "#1976d2" : "#cfcfcf",
+                      page >= arr[idx + 1].num ? "#E50520" : "#cfcfcf",
                   }}
                 />
               )}
