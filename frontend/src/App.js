@@ -1343,7 +1343,9 @@ ${notes || "None"}
 
               {(foam !== "None" || sensors.PT100 || sensors.J || sensors.K || limiterEnabled) && (
                 <>
-                  <h4 style={{ marginTop: "10px", color: "#E50520" }}>Add-Ons</h4>
+<h4 style={{ margin: "10px 0", color: "#E50520", fontSize: "17px" }}>
+  Add-Ons
+</h4>
                   {foam !== "None" && <p><strong>Foam:</strong> {foam}</p>}
                   {(sensors.PT100 || sensors.J || sensors.K) && (
                     <p>
