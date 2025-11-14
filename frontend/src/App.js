@@ -983,7 +983,14 @@ ${notes || "None"}
           placeholder="Enter any special requirements..."
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          style={{ width: "100%", height: "100px", padding: "8px" }}
+            style={{
+    width: "100%",
+    height: "100px",
+    padding: "8px",
+    resize: "vertical",    // optional: allow resizing
+    fontFamily: "inherit", // makes it match the rest of the form
+    fontSize: "14px"
+  }}
         />
         {/* ⬆️ No name="notes" on purpose – we include it inside message instead */}
       </div>
