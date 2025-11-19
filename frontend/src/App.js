@@ -39,7 +39,6 @@ function App() {
 
   // --- Reset helper for Page 1 ---
   const clearPage1 = () => {
-    // Reset Page 1
     setVolts("");
     setWatts("");
     setWidth("200");
@@ -50,7 +49,6 @@ function App() {
     setConnectionType("Cable");
     setConnectionLength("0.3");
 
-    // Reset Page 2
     setFixingAdhesive("No");
     setSensors({ PT100: false, Thermocouple: false, Thermistor: false });
     setLimiterEnabled(false);
@@ -59,13 +57,11 @@ function App() {
     setAnnualQty("");
     setNotes("");
 
-    // Return user to Page 1
     setPage(1);
   };
 
   // --- Reset helper for Page 2 ---
   const clearPage2 = () => {
-    // Reset Page 1
     setVolts("");
     setWatts("");
     setWidth("200");
@@ -76,7 +72,6 @@ function App() {
     setConnectionType("Cable");
     setConnectionLength("0.3");
 
-    // Reset Page 2
     setFixingAdhesive("No");
     setSensors({ PT100: false, Thermocouple: false, Thermistor: false });
     setLimiterEnabled(false);
@@ -85,7 +80,6 @@ function App() {
     setAnnualQty("");
     setNotes("");
 
-    // Return user to Page 1
     setPage(1);
   };
 
@@ -100,14 +94,14 @@ function App() {
   const areaCM = areaMM / 100;
   const wattDensity = areaMM && wattsNum ? (wattsNum / areaCM).toFixed(2) : 0;
 
-  // --- Preview Scaling ---
+  // --- Preview Scaling (only relevant for non-attachment shapes) ---
   const maxPreview = 300;
   const minScale = 0.05;
   let scale = 1;
   if (shape === "Rectangle") {
     const largest = Math.max(widthNum, lengthNum);
     scale = Math.min(maxPreview / largest, 1);
-  } else {
+  } else if (shape === "Circle" || shape === "Donut") {
     scale = Math.min(maxPreview / diameterNum, 1);
   }
   scale = Math.max(scale, minScale);
@@ -125,15 +119,14 @@ function App() {
   const leadLength = 30 * scale;
   const leadSpacing = patchWidth * 0.5;
 
-  const heaterColor = foam === "None" ? "#8B0000" : "gray";
+  const heaterColor = foam === "None" ? "#8B0000" : "#d3d3d3";
   const foamActive = foam !== "None";
 
-  // --- Donut mid-radius placement (in preview pixels) ---
+  // Donut mid-radius
   const heaterW = Math.max(previewWidth, 20);
   const heaterH = Math.max(previewHeight, 20);
   const centerX = heaterW / 2;
   const centerY = heaterH / 2;
-
   const outerRpx = (diameterNum / 2) * scale;
   const innerRpx = (innerDiameterNum / 2) * scale;
   const midRpx = innerRpx + (outerRpx - innerRpx) / 2;
@@ -147,27 +140,11 @@ function App() {
   };
   const slider = { flex: 1 };
 
-  // Side-view helpers with diminishing visual scaling for thicker foam
+  // Side-view foam thickness (visual only)
   const foamPx =
     foam !== "None"
       ? 6 + parseInt(foam, 10) * 1.5 - Math.min(parseInt(foam, 10), 8) * 0.4
       : 0;
-
-  // === Dimension Line Styles ===
-  const dimLineStyle = {
-    position: "absolute",
-    height: "1px",
-    backgroundColor: "black",
-  };
-
-  const arrowStyle = {
-    width: 0,
-    height: 0,
-    borderLeft: "6px solid transparent",
-    borderRight: "6px solid transparent",
-    borderTop: "6px solid black",
-    position: "absolute",
-  };
 
   return (
     <div
@@ -178,65 +155,70 @@ function App() {
       }}
     >
       <style>{`
-        .range-red { accent-color: #E50520; }
+  html {
+    overflow-y: scroll;
+  }
 
-        .range-red {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 100%;
-          background: transparent;
-        }
+  .range-red { accent-color: #E50520; }
 
-        .range-red::-webkit-slider-runnable-track {
-          height: 4px;
-          background: #f3c2c2;
-          border-radius: 2px;
-        }
-        .range-red::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          width: 16px;
-          height: 16px;
-          margin-top: -6px;
-          border-radius: 50%;
-          background: #E50520;
-          border: 2px solid #b21b1b;
-          cursor: pointer;
-        }
+  .range-red {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+  }
 
-        .range-red::-moz-range-track {
-          height: 4px;
-          background: #f3c2c2;
-          border-radius: 2px;
-        }
-        .range-red::-moz-range-thumb {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: #E50520;
-          border: 2px solid #b21b1b;
-          cursor: pointer;
-        }
+  .range-red::-webkit-slider-runnable-track {
+    height: 4px;
+    background: #f3c2c2;
+    border-radius: 2px;
+  }
+  .range-red::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: #E50520;
+    border: 2px solid #b21b1b;
+    cursor: pointer;
+  }
 
-        .range-red::-ms-track {
-          height: 4px;
-          background: transparent;
-          border-color: transparent;
-          color: transparent;
-        }
-        .range-red::-ms-fill-lower,
-        .range-red::-ms-fill-upper {
-          background: #f3c2c2;
-          border-radius: 2px;
-        }
-        .range-red::-ms-thumb {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background: #E50520;
-          border: 2px solid #b21b1b;
-          cursor: pointer;
-        }
-      `}</style>
+  .range-red::-moz-range-track {
+    height: 4px;
+    background: #f3c2c2;
+    border-radius: 2px;
+  }
+  .range-red::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #E50520;
+    border: 2px solid #b21b1b;
+    cursor: pointer;
+  }
+
+  .range-red::-ms-track {
+    height: 4px;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  .range-red::-ms-fill-lower,
+  .range-red::-ms-fill-upper {
+    background: #f3c2c2;
+    border-radius: 2px;
+  }
+  .range-red::-ms-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #E50520;
+    border: 2px solid #b21b1b;
+    cursor: pointer;
+  }
+`}</style>
+
 
       {/* --- Step Bar --- */}
       <div
@@ -359,45 +341,67 @@ function App() {
                   Dimensions
                 </h3>
 
-                {/* Shape Selector */}
+                {/* Shape Selector (now includes Attachment) */}
                 <div style={{ marginBottom: "14px" }}>
-                  {["Rectangle", "Circle", "Donut"].map((option) => (
-                    <label key={option} style={{ marginRight: "15px" }}>
-                      <input
-                        type="radio"
-                        name="shape"
-                        checked={shape === option}
-                        onChange={() => setShape(option)}
-                      />
-                      <span style={{ marginLeft: "5px" }}>{option}</span>
-                    </label>
-                  ))}
+                  {["Rectangle", "Circle", "Donut", "Attachment"].map(
+                    (option) => (
+                      <label key={option} style={{ marginRight: "15px" }}>
+                        <input
+                          type="radio"
+                          name="shape"
+                          checked={shape === option}
+                          onChange={() => setShape(option)}
+                        />
+                        <span style={{ marginLeft: "5px" }}>{option}</span>
+                      </label>
+                    )
+                  )}
                 </div>
+
+                {/* Info text for Attachment */}
+                {shape === "Attachment" && (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "#555",
+                      marginTop: "6px",
+                    }}
+                  >
+                    For attachments, dimensions here are not required.
+                    Please upload or describe your drawing in the Contact
+                    Information step.
+                  </p>
+                )}
 
                 {/* Rectangle Controls */}
                 {shape === "Rectangle" && (
                   <>
-                    <label style={{ fontWeight: "bold" }}>Length (mm):</label>
+                    <div
+                      style={{
+                        marginBottom: "4px",
+                        fontSize: "12px",
+                        color: "#666",
+                      }}
+                    >
+                      Max Width 940mm
+                    </div>
+                    <label style={{ fontWeight: "bold" }}>Width (mm):</label>
                     <div style={row}>
                       <input
                         type="range"
                         className="range-red"
-                        max="3000"
-                        value={length}
-                        onChange={(e) => {
-                          const l = parseFloat(e.target.value);
-                          setLength(e.target.value);
-                          if (l < parseFloat(width)) setWidth(e.target.value);
-                        }}
+                        max="940"
+                        value={width}
+                        onChange={(e) => setWidth(e.target.value)}
                         style={slider}
                       />
                       <input
                         type="number"
-                        value={length}
-                        onChange={(e) => setLength(e.target.value)}
-                        onBlur={() => {
-                          const l = parseFloat(length);
-                          if (l < parseFloat(width)) setWidth(length);
+                        value={width}
+                        max="940"
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          if (v <= 940) setWidth(e.target.value);
                         }}
                         style={{
                           width: "80px",
@@ -408,27 +412,33 @@ function App() {
                       />
                     </div>
 
-                    <label style={{ fontWeight: "bold" }}>Width (mm):</label>
+                    <div
+                      style={{
+                        marginBottom: "4px",
+                        marginTop: "14px",
+                        fontSize: "12px",
+                        color: "#666",
+                      }}
+                    >
+                      Max Length 3000mm
+                    </div>
+                    <label style={{ fontWeight: "bold" }}>Length (mm):</label>
                     <div style={row}>
                       <input
                         type="range"
                         className="range-red"
-                        max="940"
-                        value={width}
-                        onChange={(e) => {
-                          const w = parseFloat(e.target.value);
-                          setWidth(e.target.value);
-                          if (w > parseFloat(length)) setLength(e.target.value);
-                        }}
+                        max="3000"
+                        value={length}
+                        onChange={(e) => setLength(e.target.value)}
                         style={slider}
                       />
                       <input
                         type="number"
-                        value={width}
-                        onChange={(e) => setWidth(e.target.value)}
-                        onBlur={() => {
-                          const w = parseFloat(width);
-                          if (w > parseFloat(length)) setLength(width);
+                        value={length}
+                        max="3000"
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          if (v <= 3000) setLength(e.target.value);
                         }}
                         style={{
                           width: "80px",
@@ -444,9 +454,7 @@ function App() {
                 {/* Circle Controls */}
                 {shape === "Circle" && (
                   <div style={row}>
-                    <label
-                      style={{ width: 110, fontWeight: "bold" }}
-                    >
+                    <label style={{ width: 110, fontWeight: "bold" }}>
                       Diameter (mm):
                     </label>
                     <input
@@ -475,9 +483,7 @@ function App() {
                 {shape === "Donut" && (
                   <>
                     <div style={row}>
-                      <label
-                        style={{ width: 110, fontWeight: "bold" }}
-                      >
+                      <label style={{ width: 110, fontWeight: "bold" }}>
                         Outer Dia. (mm):
                       </label>
                       <input
@@ -512,9 +518,7 @@ function App() {
                     </div>
 
                     <div style={row}>
-                      <label
-                        style={{ width: 110, fontWeight: "bold" }}
-                      >
+                      <label style={{ width: 110, fontWeight: "bold" }}>
                         Inner Dia. (mm):
                       </label>
                       <input
@@ -544,6 +548,38 @@ function App() {
                   </>
                 )}
               </div>
+
+{/* === ATTACHMENT UPLOAD (only when Attachment shape is selected) === */}
+{shape === "Attachment" && (
+  <div
+    style={{
+      backgroundColor: "white",
+      borderRadius: "10px",
+      boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+      padding: "20px",
+      marginBottom: "24px",
+    }}
+  >
+    <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
+      Upload Attachment
+    </h3>
+
+    <p style={{ fontSize: "13px", color: "#555", marginBottom: "12px" }}>
+      Upload your drawing, sketch, technical file, or PDF.
+    </p>
+
+    <input
+      type="file"
+      name="attachment"
+      accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+      style={{ marginTop: "8px" }}
+    />
+
+    <p style={{ marginTop: "10px", fontSize: "12px", color: "#777" }}>
+      This file will be submitted with your enquiry.
+    </p>
+  </div>
+)}
 
               {/* Power Card */}
               <div
@@ -1045,14 +1081,15 @@ ${
     ? `Width: ${widthNum} mm\nLength: ${lengthNum} mm`
     : ""
 }
-${
-  shape === "Circle"
-    ? `Diameter: ${diameterNum} mm`
-    : ""
-}
+${shape === "Circle" ? `Diameter: ${diameterNum} mm` : ""}
 ${
   shape === "Donut"
     ? `Outer Diameter: ${diameterNum} mm\nInner Diameter: ${innerDiameterNum} mm`
+    : ""
+}
+${
+  shape === "Attachment"
+    ? "Attachment: Customer will provide drawing / file separately.\n"
     : ""
 }
 
@@ -1200,71 +1237,94 @@ ${notes || "None"}
               marginTop: "10px",
             }}
           >
-            Flexible Heater Preview
+            Preview
           </h3>
 
-          {/* FIXED PREVIEW STAGE */}
-          <div
-            style={{
-              position: "relative",
-              width: "100%",
-              minHeight: 340,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 20,
-            }}
-          >
-            {/* Heater + Dimensions Wrapper */}
+          {/* === PREVIEW AREA === */}
+          {shape !== "Attachment" ? (
+            /* Normal heater preview */
             <div
               style={{
                 position: "relative",
-                width: previewWidth,
-                height: previewHeight,
+                width: "100%",
+                minHeight: 340,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20,
               }}
             >
-              {/* Heater Body */}
+              {/* Heater + Dimensions Wrapper */}
               <div
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor:
-                    shape === "Donut" ? "transparent" : heaterColor,
-                  borderRadius:
-                    shape === "Circle" || shape === "Donut"
-                      ? "50%"
-                      : "0px",
                   position: "relative",
-                  boxShadow:
-                    shape === "Donut"
-                      ? `inset 0 0 0 ${
-                          (innerDiameterNum * scale) / 2
-                        }px ${heaterColor}`
-                      : "none",
-                  border:
-                    shape === "Donut"
-                      ? `2px solid ${heaterColor}`
-                      : "none",
+                  width: previewWidth,
+                  height: previewHeight,
                 }}
               >
-                {/* Patches (hidden by foam) */}
-                {!foamActive && (
-                  <>
-                    {/* Sensors */}
-                    {selectedSensors.length > 0 &&
-                      selectedSensors.map((sensor, index) => {
-                        const total = selectedSensors.length;
-                        const offset =
-                          (index - (total - 1) / 2) *
-                          (patchWidth * 1.2);
+                {/* Heater Body */}
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor:
+                      shape === "Donut" ? "transparent" : heaterColor,
+                    borderRadius:
+                      shape === "Circle" || shape === "Donut"
+                        ? "50%"
+                        : "0px",
+                    position: "relative",
+                    boxShadow:
+                      shape === "Donut"
+                        ? `inset 0 0 0 ${
+                            (innerDiameterNum * scale) / 2
+                          }px ${heaterColor}`
+                        : "none",
+                    border:
+                      shape === "Donut"
+                        ? `2px solid ${heaterColor}`
+                        : "none",
+                  }}
+                >
+                  {/* Patches (hidden by foam) */}
+                  {!foamActive && (
+                    <>
+                      {/* Sensors */}
+                      {selectedSensors.length > 0 &&
+                        selectedSensors.map((sensor, index) => {
+                          const total = selectedSensors.length;
+                          const offset =
+                            (index - (total - 1) / 2) *
+                            (patchWidth * 1.2);
 
-                        if (shape === "Donut") {
-                          const angle =
-                            (index / total) * Math.PI - Math.PI / 2;
-                          const x =
-                            centerX + Math.cos(angle) * midRpx;
-                          const y =
-                            centerY + Math.sin(angle) * midRpx;
+                          if (shape === "Donut") {
+                            const angle =
+                              (index / total) * Math.PI -
+                              Math.PI / 2;
+                            const x =
+                              centerX + Math.cos(angle) * midRpx;
+                            const y =
+                              centerY + Math.sin(angle) * midRpx;
+
+                            return (
+                              <div
+                                key={sensor}
+                                style={{
+                                  position: "absolute",
+                                  width: patchWidth * 0.8,
+                                  height: patchHeight * 0.8,
+                                  backgroundColor: "#b22222",
+                                  left: x,
+                                  top: y,
+                                  transform:
+                                    "translate(-50%, -50%)",
+                                  border: "1px solid #800000",
+                                  borderRadius: "2px",
+                                  zIndex: 3,
+                                }}
+                              />
+                            );
+                          }
 
                           return (
                             <div
@@ -1274,8 +1334,8 @@ ${notes || "None"}
                                 width: patchWidth * 0.8,
                                 height: patchHeight * 0.8,
                                 backgroundColor: "#b22222",
-                                left: x,
-                                top: y,
+                                top: "50%",
+                                left: `calc(50% + ${offset}px)`,
                                 transform:
                                   "translate(-50%, -50%)",
                                 border: "1px solid #800000",
@@ -1284,256 +1344,267 @@ ${notes || "None"}
                               }}
                             />
                           );
-                        }
+                        })}
 
-                        return (
+                      {/* Limiter patch */}
+                      {limiterEnabled &&
+                        (shape === "Donut" ? (
                           <div
-                            key={sensor}
                             style={{
                               position: "absolute",
-                              width: patchWidth * 0.8,
-                              height: patchHeight * 0.8,
+                              width: patchWidth * 0.9,
+                              height: patchWidth * 0.9,
+                              borderRadius: "50%",
                               backgroundColor: "#b22222",
-                              top: "50%",
-                              left: `calc(50% + ${offset}px)`,
+                              border: "1px solid #800000",
+                              left: `${donutLimiterLeftPx}px`,
+                              top: `${centerY}px`,
                               transform:
                                 "translate(-50%, -50%)",
-                              border: "1px solid #800000",
-                              borderRadius: "2px",
                               zIndex: 3,
                             }}
                           />
-                        );
-                      })}
+                        ) : (
+                          <div
+                            style={{
+                              position: "absolute",
+                              width: patchWidth * 0.9,
+                              height: patchWidth * 0.9,
+                              borderRadius: "50%",
+                              backgroundColor: "#b22222",
+                              border: "1px solid #800000",
+                              bottom: patchHeight + 4 * scale,
+                              left: "50%",
+                              transform: "translateX(-50%)",
+                              zIndex: 3,
+                            }}
+                          />
+                        ))}
 
-                    {/* Limiter patch */}
-                    {limiterEnabled &&
-                      (shape === "Donut" ? (
-                        <div
-                          style={{
-                            position: "absolute",
-                            width: patchWidth * 0.9,
-                            height: patchWidth * 0.9,
-                            borderRadius: "50%",
-                            backgroundColor: "#b22222",
-                            border: "1px solid #800000",
-                            left: `${donutLimiterLeftPx}px`,
-                            top: `${centerY}px`,
-                            transform:
-                              "translate(-50%, -50%)",
-                            zIndex: 3,
-                          }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            position: "absolute",
-                            width: patchWidth * 0.9,
-                            height: patchWidth * 0.9,
-                            borderRadius: "50%",
-                            backgroundColor: "#b22222",
-                            border: "1px solid #800000",
-                            bottom: patchHeight + 4 * scale,
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            zIndex: 3,
-                          }}
-                        />
-                      ))}
+                      {/* Termination patch */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          width: patchWidth,
+                          height: patchHeight,
+                          backgroundColor: "#b22222",
+                          left: "50%",
+                          bottom: (patchWidth - patchHeight) / 2,
+                          transform:
+                            "translateX(-50%) rotate(90deg)",
+                          border: "1px solid #800000",
+                          zIndex: 2,
+                        }}
+                      />
+                    </>
+                  )}
 
-                    {/* Termination patch */}
+                  {/* Cable / Leads */}
+                  {connectionType === "Cable" && (
                     <div
                       style={{
                         position: "absolute",
-                        width: patchWidth,
-                        height: patchHeight,
-                        backgroundColor: "#b22222",
+                        width: cableThickness,
+                        height: cableLength,
+                        backgroundColor: "black",
+                        bottom: -cableLength,
                         left: "50%",
-                        bottom:
-                          (patchWidth - patchHeight) / 2,
+                        transform: "translateX(-50%)",
+                        zIndex: 4,
+                      }}
+                    />
+                  )}
+
+                  {connectionType === "Leads" && (
+                    <>
+                      <div
+                        style={{
+                          position: "absolute",
+                          width: leadThickness,
+                          height: leadLength,
+                          backgroundColor: "black",
+                          bottom: -leadLength + scale,
+                          left: "50%",
+                          transform: `translateX(-${
+                            leadSpacing / 2 +
+                            leadThickness / 2
+                          }px)`,
+                          zIndex: 4,
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          width: leadThickness,
+                          height: leadLength,
+                          backgroundColor: "black",
+                          bottom: -leadLength + scale,
+                          left: "50%",
+                          transform: `translateX(${
+                            leadSpacing / 2 -
+                            leadThickness / 2
+                          }px)`,
+                          zIndex: 4,
+                        }}
+                      />
+                    </>
+                  )}
+                </div>
+
+                {/* Rectangle dimension lines */}
+                {shape === "Rectangle" && (
+                  <>
+                    {/* Width label */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -30,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {widthNum} mm
+                    </div>
+
+                    {/* Width line */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -15,
+                        left: 0,
+                        width: previewWidth,
+                        height: 1,
+                        backgroundColor: "black",
+                      }}
+                    />
+
+                    {/* Width ticks */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -19,
+                        left: -1,
+                        width: 1,
+                        height: 8,
+                        backgroundColor: "black",
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -19,
+                        left: previewWidth - 1,
+                        width: 1,
+                        height: 8,
+                        backgroundColor: "black",
+                      }}
+                    />
+
+                    {/* Length label */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: previewWidth + 5,
+                        top: "50%",
                         transform:
-                          "translateX(-50%) rotate(90deg)",
-                        transformOrigin: "center",
-                        border: "1px solid #800000",
-                        zIndex: 2,
+                          "translateY(-50%) rotate(90deg)",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {lengthNum} mm
+                    </div>
+
+                    {/* Length line */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: previewWidth + 10,
+                        width: 1,
+                        height: previewHeight,
+                        backgroundColor: "black",
+                      }}
+                    />
+
+                    {/* Length ticks */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: -1,
+                        left: previewWidth + 6,
+                        width: 8,
+                        height: 1,
+                        backgroundColor: "black",
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: previewHeight - 1,
+                        left: previewWidth + 6,
+                        width: 8,
+                        height: 1,
+                        backgroundColor: "black",
                       }}
                     />
                   </>
                 )}
 
-                {/* Cable / Leads */}
-                {connectionType === "Cable" && (
+                {/* Circle / donut labels */}
+                {shape === "Circle" && (
                   <div
                     style={{
                       position: "absolute",
-                      width: cableThickness,
-                      height: cableLength,
-                      backgroundColor: "black",
-                      bottom: -cableLength,
+                      top: -24,
                       left: "50%",
                       transform: "translateX(-50%)",
-                      zIndex: 4,
+                      fontSize: "12px",
+                      fontWeight: "bold",
                     }}
-                  />
+                  >
+                    Ø {diameterNum} mm
+                  </div>
                 )}
-
-                {connectionType === "Leads" && (
-                  <>
-                    <div
-                      style={{
-                        position: "absolute",
-                        width: leadThickness,
-                        height: leadLength,
-                        backgroundColor: "black",
-                        bottom: -leadLength + scale,
-                        left: "50%",
-                        transform: `translateX(-${
-                          leadSpacing / 2 +
-                          leadThickness / 2
-                        }px)`,
-                        zIndex: 4,
-                      }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        width: leadThickness,
-                        height: leadLength,
-                        backgroundColor: "black",
-                        bottom: -leadLength + scale,
-                        left: "50%",
-                        transform: `translateX(${
-                          leadSpacing / 2 -
-                          leadThickness / 2
-                        }px)`,
-                        zIndex: 4,
-                      }}
-                    />
-                  </>
+                {shape === "Donut" && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: -24,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Ø {diameterNum}/{innerDiameterNum} mm
+                  </div>
                 )}
               </div>
-
-              {/* Dimension lines for rectangle */}
-              {shape === "Rectangle" && (
-                <>
-                  {/* Width label */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -28,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                  <span style={{ whiteSpace: "nowrap" }}>{widthNum} mm</span>
-                  </div>
-
-                  {/* Width line */}
-                  <div
-                    style={{
-                      ...dimLineStyle,
-                      width: previewWidth,
-                      top: -15,
-                      left: 0,
-                    }}
-                  />
-
-                  {/* Width arrows */}
-                  <div
-                    style={{
-                      ...arrowStyle,
-                      transform: "rotate(-90deg)",
-                      top: -21,
-                      left: -6,
-                    }}
-                  />
-                  <div
-                    style={{
-                      ...arrowStyle,
-                      transform: "rotate(90deg)",
-                      top: -21,
-                      left: previewWidth - 6,
-                    }}
-                  />
-
-                  {/* Length label */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: previewWidth + 25,
-                      top: "50%",
-                      transform:
-                        "translateY(-50%) rotate(90deg)",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    <span style={{ whiteSpace: "nowrap" }}>{lengthNum} mm</span>
-                  </div>
-
-                  {/* Length line */}
-                  <div
-                    style={{
-                      ...dimLineStyle,
-                      width: 1,
-                      height: previewHeight,
-                      left: previewWidth + 10,
-                      top: 0,
-                    }}
-                  />
-
-                  {/* Length arrows */}
-                  <div
-                    style={{
-                      ...arrowStyle,
-                      top: -6,
-                      left: previewWidth + 4,
-                    }}
-                  />
-                  <div
-                    style={{
-                      ...arrowStyle,
-                      transform: "rotate(180deg)",
-                      top: previewHeight - 4,
-                      left: previewWidth + 4,
-                    }}
-                  />
-                </>
-              )}
-
-              {/* Circle / Donut labels (simple text) */}
-              {shape === "Circle" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -24,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <span style={{ whiteSpace: "nowrap" }}>Ø {diameterNum} mm</span>
-                </div>
-              )}
-              {shape === "Donut" && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -24,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <span style={{ whiteSpace: "nowrap" }}>Ø {diameterNum}/{innerDiameterNum} mm</span>
-                </div>
-              )}
             </div>
-          </div>
+          ) : (
+            /* Attachment placeholder */
+            <div
+              style={{
+                width: "100%",
+                minHeight: 160,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#ececec",
+                borderRadius: "8px",
+                marginBottom: 20,
+                padding: 20,
+                color: "#666",
+                fontSize: "14px",
+              }}
+            >
+              🔒 Preview disabled in Attachment mode
+            </div>
+          )}
 
           {/* Connection Length label */}
           <div
@@ -1553,18 +1624,17 @@ ${notes || "None"}
               textAlign: "center",
             }}
           >
-            <div
-              style={{
-                color: "#000",
-                fontSize: "14px",
-                marginBottom: "10px",
-              }}
-            >
-              {foam === "None"
-                ? "Connection Side"
-                : `Connection Side with ${foam} Foam`}
-            </div>
-
+            {foam !== "None" && (
+              <div
+                style={{
+                  color: "#000",
+                  fontSize: "14px",
+                  marginBottom: "10px",
+                }}
+              >
+                Connection Side with {foam} Foam
+              </div>
+            )}
             <div
               style={{
                 position: "relative",
@@ -1693,7 +1763,15 @@ ${notes || "None"}
 
             {shape === "Donut" && (
               <p>
-                <strong>Size:</strong> Ø {diameterNum}/{innerDiameterNum} mm
+                <strong>Size:</strong> Ø {diameterNum}/
+                {innerDiameterNum} mm
+              </p>
+            )}
+
+            {shape === "Attachment" && (
+              <p>
+                <strong>Note:</strong> Attachment drawing / file to
+                be supplied.
               </p>
             )}
 
@@ -1740,7 +1818,7 @@ ${notes || "None"}
 
                 {foam !== "None" && (
                   <p>
-                    <strong>Thermal Insulation:</strong> {foam}
+                    <strong>Thermal Insulation:</strong> {foam} Foam
                   </p>
                 )}
 
