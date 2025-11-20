@@ -13,6 +13,7 @@ function App() {
   const [shape, setShape] = useState("Rectangle");
   const [connectionType, setConnectionType] = useState("Cable");
   const [connectionLength, setConnectionLength] = useState("0.3");
+  const [terminationPos, setTerminationPos] = useState("1-bottom"); // NEW
 
   // --- Page 2 States ---
   const [fixingAdhesive, setFixingAdhesive] = useState("No");
@@ -48,6 +49,7 @@ function App() {
     setShape("Rectangle");
     setConnectionType("Cable");
     setConnectionLength("0.3");
+    setTerminationPos("1-bottom");
 
     setFixingAdhesive("No");
     setSensors({ PT100: false, Thermocouple: false, Thermistor: false });
@@ -71,6 +73,7 @@ function App() {
     setShape("Rectangle");
     setConnectionType("Cable");
     setConnectionLength("0.3");
+    setTerminationPos("1-bottom");
 
     setFixingAdhesive("No");
     setSensors({ PT100: false, Thermocouple: false, Thermistor: false });
@@ -146,6 +149,14 @@ function App() {
       ? 6 + parseInt(foam, 10) * 1.5 - Math.min(parseInt(foam, 10), 8) * 0.4
       : 0;
 
+  // Helper to describe termination in email / summary
+  const terminationLabel =
+  terminationPos === "1-bottom"
+    ? "Middle of Width"
+    : terminationPos === "2-left"
+    ? "Middle of Length"
+    : "Custom";
+
   return (
     <div
       style={{
@@ -218,7 +229,6 @@ function App() {
     cursor: pointer;
   }
 `}</style>
-
 
       {/* --- Step Bar --- */}
       <div
@@ -526,17 +536,13 @@ function App() {
                         className="range-red"
                         max={diameter - 10}
                         value={innerDiameter}
-                        onChange={(e) =>
-                          setInnerDiameter(e.target.value)
-                        }
+                        onChange={(e) => setInnerDiameter(e.target.value)}
                         style={slider}
                       />
                       <input
                         type="text"
                         value={innerDiameter}
-                        onChange={(e) =>
-                          setInnerDiameter(e.target.value)
-                        }
+                        onChange={(e) => setInnerDiameter(e.target.value)}
                         style={{
                           width: "90px",
                           padding: "6px",
@@ -549,37 +555,49 @@ function App() {
                 )}
               </div>
 
-{/* === ATTACHMENT UPLOAD (only when Attachment shape is selected) === */}
-{shape === "Attachment" && (
-  <div
-    style={{
-      backgroundColor: "white",
-      borderRadius: "10px",
-      boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-      padding: "20px",
-      marginBottom: "24px",
-    }}
-  >
-    <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
-      Upload Attachment
-    </h3>
+              {/* === ATTACHMENT UPLOAD (only when Attachment shape is selected) === */}
+              {shape === "Attachment" && (
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "10px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                    padding: "20px",
+                    marginBottom: "24px",
+                  }}
+                >
+                  <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
+                    Upload Attachment
+                  </h3>
 
-    <p style={{ fontSize: "13px", color: "#555", marginBottom: "12px" }}>
-      Upload your drawing, sketch, technical file, or PDF.
-    </p>
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "#555",
+                      marginBottom: "12px",
+                    }}
+                  >
+                    Upload your drawing, sketch, technical file, or PDF.
+                  </p>
 
-    <input
-      type="file"
-      name="attachment"
-      accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
-      style={{ marginTop: "8px" }}
-    />
+                  <input
+                    type="file"
+                    name="attachment"
+                    accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+                    style={{ marginTop: "8px" }}
+                  />
 
-    <p style={{ marginTop: "10px", fontSize: "12px", color: "#777" }}>
-      This file will be submitted with your enquiry.
-    </p>
-  </div>
-)}
+                  <p
+                    style={{
+                      marginTop: "10px",
+                      fontSize: "12px",
+                      color: "#777",
+                    }}
+                  >
+                    This file will be submitted with your enquiry.
+                  </p>
+                </div>
+              )}
 
               {/* Power Card */}
               <div
@@ -665,20 +683,22 @@ function App() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    backgroundColor: "#f3f6fa",
-                    padding: "10px",
-                    borderRadius: "6px",
-                    marginTop: "16px",
-                    textAlign: "center",
-                    color: "#333",
-                    fontWeight: "bold",
-                    fontSize: "15px",
-                  }}
-                >
-                  Power Density: {wattDensity} W/cm²
-                </div>
+                {shape !== "Attachment" && (
+  <div
+    style={{
+      backgroundColor: "#f3f6fa",
+      padding: "10px",
+      borderRadius: "6px",
+      marginTop: "16px",
+      textAlign: "center",
+      color: "#333",
+      fontWeight: "bold",
+      fontSize: "15px",
+    }}
+  >
+    Power Density: {wattDensity} W/cm²
+  </div>
+)}
               </div>
 
               {/* Connection Card */}
@@ -718,17 +738,13 @@ function App() {
                     marginTop: "10px",
                   }}
                 >
-                  <label
-                    style={{ width: 180, fontWeight: "bold" }}
-                  >
+                  <label style={{ width: 180, fontWeight: "bold" }}>
                     Connection Length (metres):
                   </label>
                   <input
                     type="text"
                     value={connectionLength}
-                    onChange={(e) =>
-                      setConnectionLength(e.target.value)
-                    }
+                    onChange={(e) => setConnectionLength(e.target.value)}
                     style={{
                       width: "90px",
                       padding: "6px",
@@ -737,6 +753,40 @@ function App() {
                     }}
                   />
                 </div>
+              </div>
+
+              {/* Termination Position Card */}
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
+                <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
+                  Termination Position
+                </h3>
+
+{[
+  { value: "1-bottom", label: "Option 1 (Middle of Width)" },
+  { value: "2-left", label: "Option 2 (Middle of Length)" },
+  { value: "other", label: "Option 3 (Custom)" },
+].map((pos) => (
+                  <label
+                    key={pos.value}
+                    style={{ display: "block", marginBottom: "6px" }}
+                  >
+                    <input
+                      type="radio"
+                      name="termination"
+                      checked={terminationPos === pos.value}
+                      onChange={() => setTerminationPos(pos.value)}
+                    />
+                    <span style={{ marginLeft: "6px" }}>{pos.label}</span>
+                  </label>
+                ))}
               </div>
 
               <div style={{ display: "flex", gap: "10px" }}>
@@ -796,16 +846,11 @@ function App() {
               >
                 {/* Self Adhesive */}
                 <div style={{ marginBottom: "20px" }}>
-                  <h3
-                    style={{ color: "#E50520", marginBottom: "8px" }}
-                  >
+                  <h3 style={{ color: "#E50520", marginBottom: "8px" }}>
                     Self Adhesive
                   </h3>
                   {["Yes", "No"].map((option) => (
-                    <label
-                      key={option}
-                      style={{ marginRight: "20px" }}
-                    >
+                    <label key={option} style={{ marginRight: "20px" }}>
                       <input
                         type="radio"
                         name="adhesive"
@@ -819,9 +864,7 @@ function App() {
 
                 {/* Sensors */}
                 <div style={{ marginBottom: "20px" }}>
-                  <h3
-                    style={{ color: "#E50520", marginBottom: "8px" }}
-                  >
+                  <h3 style={{ color: "#E50520", marginBottom: "8px" }}>
                     Sensors
                   </h3>
 
@@ -870,24 +913,17 @@ function App() {
 
                 {/* Thermal Limiter */}
                 <div style={{ marginBottom: "20px" }}>
-                  <h3
-                    style={{ color: "#E50520", marginBottom: "8px" }}
-                  >
+                  <h3 style={{ color: "#E50520", marginBottom: "8px" }}>
                     Thermal Limiter
                   </h3>
 
                   {["Yes", "No"].map((option) => (
-                    <label
-                      key={option}
-                      style={{ marginRight: "20px" }}
-                    >
+                    <label key={option} style={{ marginRight: "20px" }}>
                       <input
                         type="radio"
                         name="limiter"
                         checked={limiterEnabled === (option === "Yes")}
-                        onChange={() =>
-                          setLimiterEnabled(option === "Yes")
-                        }
+                        onChange={() => setLimiterEnabled(option === "Yes")}
                       />{" "}
                       {option}
                     </label>
@@ -896,16 +932,11 @@ function App() {
 
                 {/* Thermal Insulation */}
                 <div>
-                  <h3
-                    style={{ color: "#E50520", marginBottom: "8px" }}
-                  >
+                  <h3 style={{ color: "#E50520", marginBottom: "8px" }}>
                     Thermal Insulation
                   </h3>
                   {["None", "3mm", "5mm", "8mm", "12mm"].map((f) => (
-                    <label
-                      key={f}
-                      style={{ marginRight: 12 }}
-                    >
+                    <label key={f} style={{ marginRight: 12 }}>
                       <input
                         type="radio"
                         name="foam"
@@ -928,9 +959,7 @@ function App() {
                   marginBottom: "24px",
                 }}
               >
-                <h3
-                  style={{ color: "#E50520", marginBottom: "12px" }}
-                >
+                <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
                   Quantity Requirements
                 </h3>
 
@@ -942,9 +971,7 @@ function App() {
                     marginBottom: "12px",
                   }}
                 >
-                  <label
-                    style={{ width: 190, fontWeight: "bold" }}
-                  >
+                  <label style={{ width: 190, fontWeight: "bold" }}>
                     Initial Quantity:
                   </label>
 
@@ -972,9 +999,7 @@ function App() {
                     gap: "10px",
                   }}
                 >
-                  <label
-                    style={{ width: 190, fontWeight: "bold" }}
-                  >
+                  <label style={{ width: 190, fontWeight: "bold" }}>
                     Est. Annual Quantity (optional):
                   </label>
                   <input
@@ -1060,21 +1085,28 @@ function App() {
               </h1>
 
               <form
-                action="https://formspree.io/f/xzzybgol"
-                method="POST"
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  padding: "20px",
-                  width: "85%",
-                }}
-              >
+  action="https://formspree.io/f/xzzybgol"
+  method="POST"
+  encType="multipart/form-data"
+  style={{
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    padding: "20px",
+    width: "85%",
+  }}
+>
                 <input
-                  type="hidden"
-                  name="message"
-                  value={`
---- DIMENSIONS ---
+  type="hidden"
+  name="message"
+  value={`
+==============================
+ FLEXIBLE HEATER CONFIGURATION
+==============================
+
+------------------------------
+ 1) DIMENSIONS
+------------------------------
 Shape: ${shape}
 ${
   shape === "Rectangle"
@@ -1089,37 +1121,44 @@ ${
 }
 ${
   shape === "Attachment"
-    ? "Attachment: Customer will provide drawing / file separately.\n"
+    ? "Attachment: Customer will provide drawing / file separately."
     : ""
 }
 
---- POWER ---
+------------------------------
+ 2) POWER
+------------------------------
 Voltage: ${voltsNum} V
 Wattage: ${wattsNum} W
-Power Density: ${wattDensity} W/cm²
+${shape !== "Attachment" ? `Power Density: ${wattDensity} W/cm²` : ""}
 
---- CONNECTION ---
+------------------------------
+ 3) CONNECTION
+------------------------------
 Type: ${connectionType}
 Length: ${connectionLengthNum.toFixed(1)} m
+Termination Position: ${terminationLabel}
 
---- ADD-ONS ---
-Adhesive: ${fixingAdhesive}
-Foam: ${foam}
-Sensors: ${
-                    selectedSensors.length > 0
-                      ? selectedSensors.join(", ")
-                      : "None"
-                  }
-Limiter: ${limiterEnabled ? "Yes" : "No"}
+------------------------------
+ 4) ADD-ONS
+------------------------------
+Self-Adhesive: ${fixingAdhesive}
+Thermal Insulation: ${foam}
+Sensors: ${selectedSensors.length > 0 ? selectedSensors.join(", ") : "None"}
+Thermal Limiter: ${limiterEnabled ? "Yes" : "No"}
 
---- QUANTITIES ---
-Initial Qty: ${initialQty || "Not specified"}
-Annual Qty: ${annualQty || "Not specified"}
+------------------------------
+ 5) QUANTITY REQUIREMENTS
+------------------------------
+Initial Quantity: ${initialQty || "Not specified"}
+Estimated Annual Quantity: ${annualQty || "Not specified"}
 
---- CUSTOMER NOTES ---
+------------------------------
+ 6) CUSTOMER NOTES
+------------------------------
 ${notes || "None"}
-                `}
-                />
+        `}
+/>
 
                 <div style={{ marginTop: 10 }}>
                   <h3 style={{ color: "#E50520" }}>Name:</h3>
@@ -1179,6 +1218,16 @@ ${notes || "None"}
                     }}
                   />
                 </div>
+<div style={{ marginTop: 10 }}>
+  <h3 style={{ color: "#E50520" }}>Attachment (optional):</h3>
+  <input
+    type="file"
+    name="extraAttachment"
+    accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+    style={{ width: "100%", padding: "6px" }}
+  />
+</div>
+
 
                 <div
                   style={{
@@ -1346,127 +1395,222 @@ ${notes || "None"}
                           );
                         })}
 
-                      {/* Limiter patch */}
-                      {limiterEnabled &&
-                        (shape === "Donut" ? (
-                          <div
-                            style={{
-                              position: "absolute",
-                              width: patchWidth * 0.9,
-                              height: patchWidth * 0.9,
-                              borderRadius: "50%",
-                              backgroundColor: "#b22222",
-                              border: "1px solid #800000",
-                              left: `${donutLimiterLeftPx}px`,
-                              top: `${centerY}px`,
-                              transform:
-                                "translate(-50%, -50%)",
-                              zIndex: 3,
-                            }}
-                          />
-                        ) : (
-                          <div
-                            style={{
-                              position: "absolute",
-                              width: patchWidth * 0.9,
-                              height: patchWidth * 0.9,
-                              borderRadius: "50%",
-                              backgroundColor: "#b22222",
-                              border: "1px solid #800000",
-                              bottom: patchHeight + 4 * scale,
-                              left: "50%",
-                              transform: "translateX(-50%)",
-                              zIndex: 3,
-                            }}
-                          />
-                        ))}
+                     {/* Thermal Limiter */}
+{limiterEnabled &&
+  (shape === "Donut" ? (
+    // Donut version stays unchanged
+    <div
+      style={{
+        position: "absolute",
+        width: patchWidth * 0.9,
+        height: patchWidth * 0.9,
+        borderRadius: "50%",
+        backgroundColor: "#b22222",
+        border: "1px solid #800000",
+        left: `${donutLimiterLeftPx}px`,
+        top: `${centerY}px`,
+        transform: "translate(-50%, -50%)",
+        zIndex: 3,
+      }}
+    />
+  ) : terminationPos === "2-left" ? (
+    // NEW POSITION — when termination is on the left side
+    <div
+      style={{
+        position: "absolute",
+        width: patchWidth * 0.9,
+        height: patchWidth * 0.9,
+        borderRadius: "50%",
+        backgroundColor: "#b22222",
+        border: "1px solid #800000",
+        top: "50%",
+        left: patchWidth + 4 * scale,   // → just inside the heater, behind termination patch
+        transform: "translateY(-50%)",
+        zIndex: 2,                      // behind the termination patch
+      }}
+    />
+  ) : (
+    // DEFAULT position (Option 1 & Other)
+    <div
+      style={{
+        position: "absolute",
+        width: patchWidth * 0.9,
+        height: patchWidth * 0.9,
+        borderRadius: "50%",
+        backgroundColor: "#b22222",
+        border: "1px solid #800000",
+        bottom: patchHeight + 4 * scale,
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 3,
+      }}
+    />
+  ))}
 
-                      {/* Termination patch */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: patchWidth,
-                          height: patchHeight,
-                          backgroundColor: "#b22222",
-                          left: "50%",
-                          bottom: (patchWidth - patchHeight) / 2,
-                          transform:
-                            "translateX(-50%) rotate(90deg)",
-                          border: "1px solid #800000",
-                          zIndex: 2,
-                        }}
-                      />
+                      {/* Termination patch - Position 1 (Bottom Centre) */}
+                      {terminationPos === "1-bottom" && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            width: patchWidth,
+                            height: patchHeight,
+                            backgroundColor: "#b22222",
+                            left: "50%",
+                            bottom:
+                              (patchWidth - patchHeight) / 2,
+                            transform:
+                              "translateX(-50%) rotate(90deg)",
+                            border: "1px solid #800000",
+                            zIndex: 2,
+                          }}
+                        />
+                      )}
+
+{/* Termination patch - Position 2 (Left Side Middle) */}
+{terminationPos === "2-left" && (
+  <div
+    style={{
+      position: "absolute",
+      width: patchWidth,
+      height: patchHeight,
+      backgroundColor: "#b22222",
+      top: "50%",
+      left: 0, // flush with the left edge, fully inside
+      transform: "translateY(-50%) rotate(180deg)",
+      border: "1px solid #800000",
+      zIndex: 2,
+    }}
+  />
+)}
                     </>
                   )}
 
-                  {/* Cable / Leads */}
-                  {connectionType === "Cable" && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        width: cableThickness,
-                        height: cableLength,
-                        backgroundColor: "black",
-                        bottom: -cableLength,
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        zIndex: 4,
-                      }}
-                    />
-                  )}
-
-                  {connectionType === "Leads" && (
+                  {/* CABLE / LEADS (POSITION 1: Bottom Centre) */}
+                  {terminationPos === "1-bottom" && (
                     <>
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: leadThickness,
-                          height: leadLength,
-                          backgroundColor: "black",
-                          bottom: -leadLength + scale,
-                          left: "50%",
-                          transform: `translateX(-${
-                            leadSpacing / 2 +
-                            leadThickness / 2
-                          }px)`,
-                          zIndex: 4,
-                        }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          width: leadThickness,
-                          height: leadLength,
-                          backgroundColor: "black",
-                          bottom: -leadLength + scale,
-                          left: "50%",
-                          transform: `translateX(${
-                            leadSpacing / 2 -
-                            leadThickness / 2
-                          }px)`,
-                          zIndex: 4,
-                        }}
-                      />
+                      {connectionType === "Cable" && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            width: cableThickness,
+                            height: cableLength,
+                            backgroundColor: "black",
+                            bottom: -cableLength,
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            zIndex: 4,
+                          }}
+                        />
+                      )}
+
+                      {connectionType === "Leads" && (
+                        <>
+                          <div
+                            style={{
+                              position: "absolute",
+                              width: leadThickness,
+                              height: leadLength,
+                              backgroundColor: "black",
+                              bottom: -leadLength,
+                              left: "50%",
+                              transform: `translateX(-${
+                                leadSpacing / 2 +
+                                leadThickness / 2
+                              }px)`,
+                              zIndex: 4,
+                            }}
+                          />
+                          <div
+                            style={{
+                              position: "absolute",
+                              width: leadThickness,
+                              height: leadLength,
+                              backgroundColor: "black",
+                              bottom: -leadLength,
+                              left: "50%",
+                              transform: `translateX(${
+                                leadSpacing / 2 -
+                                leadThickness / 2
+                              }px)`,
+                              zIndex: 4,
+                            }}
+                          />
+                        </>
+                      )}
                     </>
                   )}
+
+                  {/* CABLE / LEADS (POSITION 2: Left Side Middle) */}
+{terminationPos === "2-left" && (
+  <>
+    {connectionType === "Cable" && (
+      <div
+        style={{
+          position: "absolute",
+          width: cableLength,
+          height: cableThickness,
+          backgroundColor: "black",
+          left: -cableLength,
+          top: "50%",
+          transform: "translateY(-50%)",
+          zIndex: 4,
+        }}
+      />
+    )}
+
+    {connectionType === "Leads" && (
+      <>
+        <div
+          style={{
+            position: "absolute",
+            width: leadLength,
+            height: leadThickness,
+            backgroundColor: "black",
+            left: -leadLength,
+            top: "50%",
+            transform: `translateY(calc(-50% - ${leadSpacing / 2}px))`,
+            zIndex: 4,
+          }}
+        />
+
+        <div
+          style={{
+            position: "absolute",
+            width: leadLength,
+            height: leadThickness,
+            backgroundColor: "black",
+            left: -leadLength,
+            top: "50%",
+            transform: `translateY(calc(-50% + ${leadSpacing / 2}px))`,
+            zIndex: 4,
+          }}
+        />
+      </>
+    )}
+  </>
+)}
+                  {/* If terminationPos === "other", no cables/leads are rendered */}
                 </div>
 
                 {/* Rectangle dimension lines */}
                 {shape === "Rectangle" && (
                   <>
                     {/* Width label */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: -30,
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        fontSize: "12px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {widthNum} mm
-                    </div>
+<div
+  style={{
+    position: "absolute",
+    top: -32,
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontSize: "12px",
+    fontWeight: "bold",
+    whiteSpace: "nowrap",     // ← prevents wrapping
+    display: "inline-block",  // ← ensures single-line rendering
+  }}
+>
+  {widthNum} mm
+</div>
+
 
                     {/* Width line */}
                     <div
@@ -1562,6 +1706,8 @@ ${notes || "None"}
                       top: -24,
                       left: "50%",
                       transform: "translateX(-50%)",
+whiteSpace: "nowrap",
+display: "inline-block",
                       fontSize: "12px",
                       fontWeight: "bold",
                     }}
@@ -1576,6 +1722,8 @@ ${notes || "None"}
                       top: -24,
                       left: "50%",
                       transform: "translateX(-50%)",
+whiteSpace: "nowrap",
+display: "inline-block",
                       fontSize: "12px",
                       fontWeight: "bold",
                     }}
@@ -1650,7 +1798,7 @@ ${notes || "None"}
                 <div
                   style={{
                     position: "absolute",
-                    right: 0,
+                    Left: 0,
                     top: "-5px",
                     width: 18,
                     height: 5,
@@ -1662,16 +1810,16 @@ ${notes || "None"}
 
               {/* Lead always visible */}
               <div
-                style={{
-                  position: "absolute",
-                  right: -40,
-                  top: foam === "None" ? "-2px" : `${foamPx - 2}px`,
-                  width: 40,
-                  height: 3,
-                  backgroundColor: "black",
-                  zIndex: 1,
-                }}
-              />
+  style={{
+    position: "absolute",
+    left: -40,   // moved further left
+    top: foam === "None" ? "-2px" : `${foamPx - 2}px`,
+    width: 40,
+    height: 3,
+    backgroundColor: "black",
+    zIndex: 1,
+  }}
+/>
 
               {/* Foam layer */}
               {foam !== "None" && (
@@ -1680,7 +1828,8 @@ ${notes || "None"}
                     height: foamPx,
                     width: "100%",
                     backgroundColor: "#d3d3d3",
-                    boxSizing: "border-box",
+                    boxSizing: "border-box",    top: foam === "None" ? "-2px" : `${foamPx - 2}px`,
+
                   }}
                 />
               )}
@@ -1763,15 +1912,13 @@ ${notes || "None"}
 
             {shape === "Donut" && (
               <p>
-                <strong>Size:</strong> Ø {diameterNum}/
-                {innerDiameterNum} mm
+                <strong>Size:</strong> Ø {diameterNum}/{innerDiameterNum} mm
               </p>
             )}
 
             {shape === "Attachment" && (
               <p>
-                <strong>Note:</strong> Attachment drawing / file to
-                be supplied.
+                <strong>Note:</strong> Attachment drawing / file to be supplied.
               </p>
             )}
 
@@ -1784,6 +1931,9 @@ ${notes || "None"}
             <p>
               <strong>Connection:</strong> {connectionType} (
               {connectionLengthNum.toFixed(1)} m)
+            </p>
+            <p>
+              <strong>Termination:</strong> {terminationLabel}
             </p>
             <p>
               <strong>Adhesive:</strong> {fixingAdhesive}
