@@ -228,6 +228,18 @@ function App() {
     border: 2px solid #b21b1b;
     cursor: pointer;
   }
+@media (max-width: 900px) {
+  .main-layout {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .left-panel,
+  .right-panel {
+    width: 100% !important;
+    padding-right: 0 !important;
+  }
+}
 `}</style>
 
       {/* --- Step Bar --- */}
@@ -308,32 +320,33 @@ function App() {
         </div>
       </div>
 
-      {/* --- Centered Layout --- */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          gap: "20px",
-          maxWidth: "1100px",
-          margin: "0 auto",
-          padding: "30px 20px",
-        }}
-      >
-        {/* --- LEFT SIDE --- */}
-        <div style={{ flex: 1.2, paddingRight: 20 }}>
-          {/* === PAGE 1 === */}
-          {page === 1 && (
-            <>
-              <h1
-                style={{
-                  color: "#E50520",
-                  fontSize: "26px",
-                  marginBottom: "20px",
-                  fontWeight: "bold",
-                  textAlign: "left",
-                }}
-              >
+     {/* --- Centered Layout --- */}
+<div
+  className="main-layout"
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    gap: "20px",
+    maxWidth: "1100px",
+    margin: "0 auto",
+    padding: "30px 20px",
+  }}
+>
+  {/* --- LEFT SIDE --- */}
+  <div className="left-panel" style={{ flex: 1.2, paddingRight: 20 }}>
+    {/* === PAGE 1 === */}
+    {page === 1 && (
+      <>
+        <h1
+          style={{
+            color: "#E50520",
+            fontSize: "26px",
+            marginBottom: "20px",
+            fontWeight: "bold",
+            textAlign: "left",
+          }}
+        >
                 Dimensions & Power
               </h1>
 
