@@ -270,6 +270,23 @@ function App() {
     transform: scale(0.75);
   }
 }
+/* FIX: Step bar text getting cut off on small screens */
+@media (max-width: 600px) {
+  .step-bar {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: center !important;
+  }
+
+  .step-bar div {
+    max-width: 100% !important;
+  }
+
+  .step-label {
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+}
 `}</style>
 
       {/* --- Step Bar --- */}
@@ -286,6 +303,7 @@ function App() {
         }}
       >
         <div
+className="step-bar"
           style={{
             maxWidth: 1100,
             margin: "0 auto",
@@ -326,6 +344,7 @@ function App() {
                   {step.num}
                 </div>
                 <span
+className="step-label"
                   style={{
                     marginLeft: 8,
                     color: page === step.num ? "#E50520" : "#666",
