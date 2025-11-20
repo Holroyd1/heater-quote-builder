@@ -228,16 +228,46 @@ function App() {
     border: 2px solid #b21b1b;
     cursor: pointer;
   }
+/* -------------------------- */
+/* MOBILE / TABLET RESPONSIVE */
+/* -------------------------- */
+
 @media (max-width: 900px) {
   .main-layout {
     flex-direction: column !important;
-    align-items: center !important;
+    align-items: stretch !important;
+    padding: 10px !important;
+    gap: 10px !important;
   }
 
   .left-panel,
   .right-panel {
     width: 100% !important;
     padding-right: 0 !important;
+  }
+
+  .preview-wrapper {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-layout {
+    padding: 5px !important;
+  }
+
+  h1, h3 {
+    font-size: 18px !important;
+  }
+
+  button {
+    width: 100% !important;
+    margin-bottom: 10px;
+  }
+
+  .preview-wrapper {
+    transform: scale(0.75);
   }
 }
 `}</style>
@@ -1282,7 +1312,8 @@ ${notes || "None"}
 
         {/* --- RIGHT SIDE (Preview + Summary) --- */}
         <div
-          style={{
+  className="right-panel"
+  style={{
             flex: 1,
             textAlign: "center",
             backgroundColor: "#f9f9f9",
@@ -1306,16 +1337,17 @@ ${notes || "None"}
           {shape !== "Attachment" ? (
             /* Normal heater preview */
             <div
-              style={{
-                position: "relative",
-                width: "100%",
-                minHeight: 340,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: 20,
-              }}
-            >
+  className="preview-wrapper"
+  style={{
+    position: "relative",
+    width: "100%",
+    minHeight: 340,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  }}
+>
               {/* Heater + Dimensions Wrapper */}
               <div
                 style={{
