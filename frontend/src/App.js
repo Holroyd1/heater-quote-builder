@@ -12,7 +12,7 @@ function App() {
   const [innerDiameter, setInnerDiameter] = useState("100");
   const [shape, setShape] = useState("Rectangle");
   const [connectionType, setConnectionType] = useState("Cable");
-  const [connectionLength, setConnectionLength] = useState("0.3");
+  const [connectionLength, setConnectionLength] = useState("");
   const [terminationPos, setTerminationPos] = useState("1-bottom"); // NEW
 
   // --- Page 2 States ---
