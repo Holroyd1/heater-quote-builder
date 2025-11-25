@@ -142,6 +142,7 @@ async function handleFileSelect(e) {
   );
 
   const data = await res.json();
+  console.log("Uploaded URL:", data.url);  // <-- NEW
 
   setUploadedFileUrl(data.url);
   setUploading(false);
