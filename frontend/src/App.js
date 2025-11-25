@@ -136,7 +136,7 @@ async function handleFileSelect(e) {
       method: "POST",
       body: formData,
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_VERCEL_TOKEN}`,
+        Authorization: `Bearer ${process.env.REACT_APP_VERCEL_TOKEN}`,
       },
     }
   );
