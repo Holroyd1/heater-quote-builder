@@ -127,24 +127,22 @@ async function handleFileSelect(e) {
 
   setUploading(true);
 
-  const formData = new FormData();
-  formData.append("file", file);
+  // Step 1 — request a signed upload URL from your API route
+  const sessionRes = await fetch("/api/blob-upload-url");
+  const { url: uploadUrl } = await sessionRes.json();
 
-  const res = await fetch(
-    "https://api.vercel.com/v2/blob?access=public",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_VERCEL_TOKEN}`,
-      },
-    }
-  );
+  // Step 2 — upload the file directly using the signed URL
+  const uploadRes = await fetch(uploadUrl, {
+    method: "PUT",
+    body: file,
+  });
 
-  const data = await res.json();
-  console.log("Uploaded URL:", data.url);  // <-- NEW
+  // Step 3 — Vercel returns the final public Blob URL in the Location header
+  const blobUrl = uploadRes.headers.get("Location");
 
-  setUploadedFileUrl(data.url);
+  console.log("Uploaded URL:", blobUrl);
+
+  setUploadedFileUrl(blobUrl);
   setUploading(false);
 }
 async function handleSubmit(e) {
