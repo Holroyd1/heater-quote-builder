@@ -14,6 +14,11 @@ function App() {
   const [connectionLength, setConnectionLength] = useState("");
   const [terminationPos, setTerminationPos] = useState("1-bottom");
 
+// --- File Upload State ---
+const [uploadedFileUrl, setUploadedFileUrl] = useState("");
+const [uploading, setUploading] = useState(false);
+
+
   // --- Page 2 States ---
   const [fixingAdhesive, setFixingAdhesive] = useState("No");
   const [sensors, setSensors] = useState({
@@ -115,6 +120,105 @@ function App() {
       : terminationPos === "2-left"
       ? "Middle of Length"
       : "Custom";
+
+async function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setUploading(true);
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+  setUploadedFileUrl(data.url);
+  setUploading(false);
+}
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  const form = e.target;
+
+  const payload = {
+  name: form.name.value,
+  company: form.company.value,
+  email: form.email.value,
+  phone: form.phone.value,
+
+  message: `
+==============================
+ FLEXIBLE HEATER CONFIGURATION
+==============================
+
+------------------------------
+ 1) DIMENSIONS
+------------------------------
+Shape: ${shape}
+${shape === "Rectangle" ? `Width: ${widthNum} mm\nLength: ${lengthNum} mm` : ""}
+${shape === "Circle" ? `Diameter: ${diameterNum} mm` : ""}
+${shape === "Attachment" ? "Attachment: Customer will provide drawing/file." : ""}
+
+------------------------------
+ 2) POWER
+------------------------------
+Voltage: ${voltsNum} V
+Wattage: ${wattsNum} W
+${shape !== "Attachment" ? `Power Density: ${wattDensity} W/cm²` : ""}
+
+------------------------------
+ 3) CONNECTION
+------------------------------
+Type: ${connectionType}
+Length: ${connectionLength} m
+Termination Position: ${terminationLabel}
+
+------------------------------
+ 4) ADD-ONS
+------------------------------
+Self-Adhesive: ${fixingAdhesive}
+Thermal Insulation: ${foam}
+Sensors: ${
+  [
+    sensors.PT100_PT1000 && "PT100/PT1000",
+    sensors.Thermocouple && "Thermocouple",
+    sensors.Thermistor && "Thermistor"
+  ].filter(Boolean).join(", ") || "None"
+}
+Thermal Limiter: ${limiterEnabled ? "Yes" : "No"}
+
+------------------------------
+ 5) QUANTITY REQUIREMENTS
+------------------------------
+Initial Quantity: ${initialQty || "Not specified"}
+Estimated Annual Quantity: ${annualQty || "Not specified"}
+
+------------------------------
+ 6) CUSTOMER NOTES
+------------------------------
+${notes || "None"}
+
+------------------------------
+ 7) ATTACHMENT
+------------------------------
+Attachment URL: ${uploadedFileUrl || "None"}
+`,
+
+  attachmentUrl: uploadedFileUrl || "None",
+};
+
+  await fetch("https://formspree.io/f/xzzybgol", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  alert("Your enquiry has been sent!");
+}
 
   return (
     <div style={{ fontFamily: "Arial", position: "relative", paddingTop: "84px" }}>
@@ -722,75 +826,16 @@ function App() {
                 Contact Information
               </h1>
 
-              <form
-                action="https://formspree.io/f/xzzybgol"
-                method="POST"
-                encType="multipart/form-data"
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  padding: "20px",
-                  width: "85%",
-                }}
-              >
-                {/* HIDDEN FULL SUMMARY FIELD */}
-                <input
-                  type="hidden"
-                  name="message"
-                  value={`
-==============================
- FLEXIBLE HEATER CONFIGURATION
-==============================
-
-------------------------------
- 1) DIMENSIONS
-------------------------------
-Shape: ${shape}
-${shape === "Rectangle" ? `Width: ${widthNum} mm\nLength: ${lengthNum} mm` : ""}
-${shape === "Circle" ? `Diameter: ${diameterNum} mm` : ""}
-${shape === "Attachment" ? `Attachment: Customer will provide a drawing.` : ""}
-
-------------------------------
- 2) POWER
-------------------------------
-Voltage: ${voltsNum} V
-Wattage: ${wattsNum} W
-${shape !== "Attachment" ? `Power Density: ${wattDensity} W/cm²` : ""}
-
-------------------------------
- 3) CONNECTION
-------------------------------
-Type: ${connectionType}
-Length: ${connectionLength} m
-Termination Position: ${terminationLabel}
-
-------------------------------
- 4) ADD-ONS
-------------------------------
-Self-Adhesive: ${fixingAdhesive}
-Thermal Insulation: ${foam}
-Sensors: ${
-  selectedSensors.length
-    ? selectedSensors
-        .map(s => (s === "PT100_PT1000" ? "PT100/PT1000" : s))
-        .join(", ")
-    : "None"
-}
-Thermal Limiter: ${limiterEnabled ? "Yes" : "No"}
-
-------------------------------
- 5) QUANTITY REQUIREMENTS
-------------------------------
-Initial Quantity: ${initialQty || "Not specified"}
-Estimated Annual Quantity: ${annualQty || "Not specified"}
-
-------------------------------
- 6) CUSTOMER NOTES
-------------------------------
-${notes || "None"}
-`}
-                />
+<form
+  onSubmit={handleSubmit}
+  style={{
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    padding: "20px",
+    width: "85%",
+  }}
+>
 
                 <div style={{ marginTop: 10 }}>
                   <h3 style={{ color: "#E50520" }}>Name:</h3>
@@ -851,15 +896,32 @@ ${notes || "None"}
                   />
                 </div>
 
-                <div style={{ marginTop: 10 }}>
-                  <h3 style={{ color: "#E50520" }}>Attachment (optional):</h3>
-                  <input
-                    type="file"
-                    name="extraAttachment"
-                    accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
-                    style={{ width: "100%", padding: "6px" }}
-                  />
-                </div>
+<div style={{ marginTop: 10 }}>
+  <h3 style={{ color: "#E50520" }}>Attachment (optional):</h3>
+
+  <input
+    type="file"
+    accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+    onChange={handleFileSelect}
+    style={{ width: "100%", padding: "6px" }}
+  />
+
+  {uploading && (
+    <p style={{ color: "#555", marginTop: "6px" }}>
+      Uploading file…
+    </p>
+  )}
+
+  {uploadedFileUrl && (
+    <p style={{ color: "green", marginTop: "6px" }}>
+      File uploaded ✔  
+      <br />
+      <a href={uploadedFileUrl} target="_blank" rel="noreferrer">
+        View Attachment
+      </a>
+    </p>
+  )}
+</div>
 
                 <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
                   <button
