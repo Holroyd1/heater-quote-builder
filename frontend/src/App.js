@@ -130,12 +130,19 @@ async function handleFileSelect(e) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    body: formData,
-  });
+  const res = await fetch(
+    "https://api.vercel.com/v2/blob?access=public",
+    {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_VERCEL_TOKEN}`,
+      },
+    }
+  );
 
   const data = await res.json();
+
   setUploadedFileUrl(data.url);
   setUploading(false);
 }
