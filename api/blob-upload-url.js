@@ -16,7 +16,8 @@ export default async function handler(req, res) {
     const blob = await put(filename, req, {
       access: "public",
       addRandomSuffix: true,
-    });
+     token: process.env.BLOB_READ_WRITE_TOKEN
+});
 
     // Send the blob info back to the browser as JSON
     return res.status(200).json({
