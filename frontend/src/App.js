@@ -127,21 +127,33 @@ async function handleFileSelect(e) {
 
   setUploading(true);
 
-  // Send the file directly to your API route
-  const response = await fetch(
-    `/api/blob-upload-url?filename=${encodeURIComponent(file.name)}`,
-    {
-      method: "POST",
-      body: file,
+  try {
+    // Step 1: send the file to your API route
+    const res = await fetch(
+      `/api/blob-upload-url?filename=${encodeURIComponent(file.name)}`,
+      {
+        method: "POST",
+        body: file,
+      }
+    );
+
+    const data = await res.json();
+    console.log("Upload response:", data);
+
+    if (!res.ok || !data.url) {
+      alert("File upload failed. Please try again.");
+      setUploading(false);
+      return;
     }
-  );
 
-  const data = await response.json();
-
-  console.log("Uploaded URL:", data.url);
-
-  setUploadedFileUrl(data.url);
-  setUploading(false);
+    // Step 2: store the URL in React state
+    setUploadedFileUrl(data.url);
+  } catch (err) {
+    console.error("Upload error:", err);
+    alert("Upload error. Please try again.");
+  } finally {
+    setUploading(false);
+  }
 }
 async function handleSubmit(e) {
   e.preventDefault();
