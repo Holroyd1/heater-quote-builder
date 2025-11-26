@@ -14,15 +14,10 @@ function App() {
   const [connectionLength, setConnectionLength] = useState("");
   const [terminationPos, setTerminationPos] = useState("1-bottom");
 
-// --- File Upload State ---
-const [uploadedFileUrl, setUploadedFileUrl] = useState("");
-const [uploading, setUploading] = useState(false);
-
-
   // --- Page 2 States ---
   const [fixingAdhesive, setFixingAdhesive] = useState("No");
   const [sensors, setSensors] = useState({
-      PT100_PT1000: false,
+    PT100_PT1000: false,
     Thermocouple: false,
     Thermistor: false,
   });
@@ -54,7 +49,7 @@ const [uploading, setUploading] = useState(false);
     setTerminationPos("1-bottom");
 
     setFixingAdhesive("No");
-    setSensors({ PT100: false, Thermocouple: false, Thermistor: false });
+    setSensors({ PT100_PT1000: false, Thermocouple: false, Thermistor: false });
     setLimiterEnabled(false);
     setFoam("None");
     setInitialQty("");
@@ -121,140 +116,28 @@ const [uploading, setUploading] = useState(false);
       ? "Middle of Length"
       : "Custom";
 
-async function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  setUploading(true);
-
-  try {
-    // Step 1: send the file to your API route
-    const res = await fetch(
-      `/api/blob-upload-url?filename=${encodeURIComponent(file.name)}`,
-      {
-        method: "POST",
-        body: file,
-      }
-    );
-
-    const data = await res.json();
-    console.log("Upload response:", data);
-
-    if (!res.ok || !data.url) {
-      alert("File upload failed. Please try again.");
-      setUploading(false);
-      return;
-    }
-
-    // Step 2: store the URL in React state
-    setUploadedFileUrl(data.url);
-  } catch (err) {
-    console.error("Upload error:", err);
-    alert("Upload error. Please try again.");
-  } finally {
-    setUploading(false);
-  }
-}
-async function handleSubmit(e) {
-  e.preventDefault();
-
-  const form = e.target;
-
-  const payload = {
-  name: form.name.value,
-  company: form.company.value,
-  email: form.email.value,
-  phone: form.phone.value,
-
-  message: `
-==============================
- FLEXIBLE HEATER CONFIGURATION
-==============================
-
-------------------------------
- 1) DIMENSIONS
-------------------------------
-Shape: ${shape}
-${shape === "Rectangle" ? `Width: ${widthNum} mm\nLength: ${lengthNum} mm` : ""}
-${shape === "Circle" ? `Diameter: ${diameterNum} mm` : ""}
-${shape === "Attachment" ? "Attachment: Customer will provide drawing/file." : ""}
-
-------------------------------
- 2) POWER
-------------------------------
-Voltage: ${voltsNum} V
-Wattage: ${wattsNum} W
-${shape !== "Attachment" ? `Power Density: ${wattDensity} W/cm²` : ""}
-
-------------------------------
- 3) CONNECTION
-------------------------------
-Type: ${connectionType}
-Length: ${connectionLength} m
-Termination Position: ${terminationLabel}
-
-------------------------------
- 4) ADD-ONS
-------------------------------
-Self-Adhesive: ${fixingAdhesive}
-Thermal Insulation: ${foam}
-Sensors: ${
-  [
-    sensors.PT100_PT1000 && "PT100/PT1000",
-    sensors.Thermocouple && "Thermocouple",
-    sensors.Thermistor && "Thermistor"
-  ].filter(Boolean).join(", ") || "None"
-}
-Thermal Limiter: ${limiterEnabled ? "Yes" : "No"}
-
-------------------------------
- 5) QUANTITY REQUIREMENTS
-------------------------------
-Initial Quantity: ${initialQty || "Not specified"}
-Estimated Annual Quantity: ${annualQty || "Not specified"}
-
-------------------------------
- 6) CUSTOMER NOTES
-------------------------------
-${notes || "None"}
-
-------------------------------
- 7) ATTACHMENT
-------------------------------
-Attachment URL: ${uploadedFileUrl || "None"}
-`,
-
-  attachmentUrl: uploadedFileUrl || "None",
-};
-
-  await fetch("https://formspree.io/f/xzzybgol", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  alert("Your enquiry has been sent!");
-}
-
   return (
     <div style={{ fontFamily: "Arial", position: "relative", paddingTop: "84px" }}>
-      {/* STYLES REMAIN UNCHANGED */}
       <style>{`
         html { overflow-y: scroll; }
         .range-red { accent-color: #E50520; }
-        /* all your existing CSS remains unchanged */
       `}</style>
 
       {/* STEP BAR */}
-      <div style={{
-        position: "fixed",
-        top: 0, left: 0, width: "100%",
-        backgroundColor: "white",
-        zIndex: 10,
-        padding: "16px 24px",
-        boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
-      }}>
-        <div className="step-bar"
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          backgroundColor: "white",
+          zIndex: 10,
+          padding: "16px 24px",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+        }}
+      >
+        <div
+          className="step-bar"
           style={{
             maxWidth: 1100,
             margin: "0 auto",
@@ -283,8 +166,7 @@ Attachment URL: ${uploadedFileUrl || "None"}
                     width: 28,
                     height: 28,
                     borderRadius: "50%",
-                    backgroundColor:
-                      page === step.num ? "#E50520" : "#cfcfcf",
+                    backgroundColor: page === step.num ? "#E50520" : "#cfcfcf",
                     color: "white",
                     display: "flex",
                     alignItems: "center",
@@ -294,7 +176,8 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 >
                   {step.num}
                 </div>
-                <span className="step-label"
+                <span
+                  className="step-label"
                   style={{
                     marginLeft: 8,
                     color: page === step.num ? "#E50520" : "#666",
@@ -309,8 +192,7 @@ Attachment URL: ${uploadedFileUrl || "None"}
                   style={{
                     width: 120,
                     height: 2,
-                    backgroundColor:
-                      page >= arr[idx + 1].num ? "#E50520" : "#cfcfcf",
+                    backgroundColor: page >= arr[idx + 1].num ? "#E50520" : "#cfcfcf",
                   }}
                 />
               )}
@@ -320,7 +202,8 @@ Attachment URL: ${uploadedFileUrl || "None"}
       </div>
 
       {/* MAIN LAYOUT */}
-      <div className="main-layout"
+      <div
+        className="main-layout"
         style={{
           display: "flex",
           justifyContent: "center",
@@ -333,34 +216,33 @@ Attachment URL: ${uploadedFileUrl || "None"}
       >
         {/* LEFT PANEL */}
         <div className="left-panel" style={{ flex: 1.2, paddingRight: 20 }}>
-
           {/* PAGE 1 */}
           {page === 1 && (
             <>
-              <h1 style={{
-                color: "#E50520",
-                fontSize: "26px",
-                marginBottom: "20px",
-                fontWeight: "bold",
-                textAlign: "left",
-              }}>
+              <h1
+                style={{
+                  color: "#E50520",
+                  fontSize: "26px",
+                  marginBottom: "20px",
+                  fontWeight: "bold",
+                  textAlign: "left",
+                }}
+              >
                 Dimensions & Power
               </h1>
 
               {/* DIMENSIONS CARD */}
-              <div style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                padding: "20px",
-                marginBottom: "24px",
-              }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
+                <h3 style={{ color: "#E50520", marginBottom: "12px" }}>Dimensions</h3>
 
-                <h3 style={{ color: "#E50520", marginBottom: "12px" }}>
-                  Dimensions
-                </h3>
-
-                {/* Shape Selector — Donut Removed */}
                 <div style={{ marginBottom: "14px" }}>
                   {["Rectangle", "Circle", "Attachment"].map((option) => (
                     <label key={option} style={{ marginRight: "15px" }}>
@@ -375,21 +257,23 @@ Attachment URL: ${uploadedFileUrl || "None"}
                   ))}
                 </div>
 
-                {/* ATTACHMENT MODE */}
                 {shape === "Attachment" && (
                   <p style={{ fontSize: "13px", color: "#555" }}>
                     Upload your drawing in the Contact Information step.
                   </p>
                 )}
 
-                {/* RECTANGLE CONTROLS */}
                 {shape === "Rectangle" && (
                   <>
-                    <div style={{ fontSize: "12px", color: "#666", marginBottom: 4 }}>
+                    <div
+                      style={{ fontSize: "12px", color: "#666", marginBottom: 4 }}
+                    >
                       Max Width 940mm
                     </div>
                     <label style={{ fontWeight: "bold" }}>Width (mm):</label>
-                    <div style={{ display: "flex", gap: "10px", margin: "6px 0" }}>
+                    <div
+                      style={{ display: "flex", gap: "10px", margin: "6px 0" }}
+                    >
                       <input
                         type="range"
                         className="range-red"
@@ -415,11 +299,19 @@ Attachment URL: ${uploadedFileUrl || "None"}
                       />
                     </div>
 
-                    <div style={{ marginTop: "14px", fontSize: "12px", color: "#666" }}>
+                    <div
+                      style={{
+                        marginTop: "14px",
+                        fontSize: "12px",
+                        color: "#666",
+                      }}
+                    >
                       Max Length 3000mm
                     </div>
                     <label style={{ fontWeight: "bold" }}>Length (mm):</label>
-                    <div style={{ display: "flex", gap: "10px", margin: "6px 0" }}>
+                    <div
+                      style={{ display: "flex", gap: "10px", margin: "6px 0" }}
+                    >
                       <input
                         type="range"
                         className="range-red"
@@ -447,9 +339,10 @@ Attachment URL: ${uploadedFileUrl || "None"}
                   </>
                 )}
 
-                {/* CIRCLE CONTROLS */}
                 {shape === "Circle" && (
-                  <div style={{ display: "flex", gap: "10px", margin: "6px 0" }}>
+                  <div
+                    style={{ display: "flex", gap: "10px", margin: "6px 0" }}
+                  >
                     <label style={{ width: 110, fontWeight: "bold" }}>
                       Diameter (mm):
                     </label>
@@ -478,78 +371,121 @@ Attachment URL: ${uploadedFileUrl || "None"}
 
               {/* ATTACHMENT FILE UPLOAD (ONLY WHEN Attachment) */}
               {shape === "Attachment" && (
-                <div style={{
-                  backgroundColor: "white",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  padding: "20px",
-                  marginBottom: "24px",
-                }}>
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "10px",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                    padding: "20px",
+                    marginBottom: "24px",
+                  }}
+                >
                   <h3 style={{ color: "#E50520" }}>Upload Attachment</h3>
                   <input type="file" accept=".pdf,.png,.jpg,.jpeg,.gif,.svg" />
                 </div>
               )}
 
               {/* POWER CARD */}
-              <div style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                padding: "20px",
-                marginBottom: "24px",
-              }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
                 <h3 style={{ color: "#E50520" }}>Electrical Configuration</h3>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    <label style={{ width: 100, fontWeight: "bold" }}>Voltage (V):</label>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label style={{ width: 100, fontWeight: "bold" }}>
+                      Voltage (V):
+                    </label>
                     <input
                       type="number"
                       value={volts}
                       onChange={(e) => setVolts(e.target.value)}
                       placeholder="e.g. 230"
-                      style={{ flex: 1, padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
                     />
                   </div>
 
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    <label style={{ width: 100, fontWeight: "bold" }}>Wattage (W):</label>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label style={{ width: 100, fontWeight: "bold" }}>
+                      Wattage (W):
+                    </label>
                     <input
                       type="number"
                       value={watts}
                       onChange={(e) => setWatts(e.target.value)}
                       placeholder="e.g. 500"
-                      style={{ flex: 1, padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
                     />
                   </div>
                 </div>
 
                 {shape !== "Attachment" && (
-                  <div style={{
-                    backgroundColor: "#f3f6fa",
-                    padding: "10px",
-                    borderRadius: "6px",
-                    marginTop: "16px",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                  }}>
+                  <div
+                    style={{
+                      backgroundColor: "#f3f6fa",
+                      padding: "10px",
+                      borderRadius: "6px",
+                      marginTop: "16px",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
                     Power Density: {wattDensity} W/cm²
                   </div>
                 )}
               </div>
 
               {/* CONNECTION CARD */}
-              <div style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                padding: "20px",
-                marginBottom: "24px",
-              }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
                 <h3 style={{ color: "#E50520" }}>Connection Type</h3>
 
                 {["Cable", "Leads"].map((type) => (
-                  <label key={type} style={{ display: "block", marginBottom: "6px" }}>
+                  <label
+                    key={type}
+                    style={{ display: "block", marginBottom: "6px" }}
+                  >
                     <input
                       type="radio"
                       name="connection"
@@ -560,7 +496,9 @@ Attachment URL: ${uploadedFileUrl || "None"}
                   </label>
                 ))}
 
-                <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <div
+                  style={{ display: "flex", gap: "10px", alignItems: "center" }}
+                >
                   <label style={{ width: 180, fontWeight: "bold" }}>
                     Connection Length (metres):
                   </label>
@@ -568,19 +506,26 @@ Attachment URL: ${uploadedFileUrl || "None"}
                     type="text"
                     value={connectionLength}
                     onChange={(e) => setConnectionLength(e.target.value)}
-                    style={{ width: 90, padding: "6px", borderRadius: "6px", border: "1px solid #ccc" }}
+                    style={{
+                      width: 90,
+                      padding: "6px",
+                      borderRadius: "6px",
+                      border: "1px solid #ccc",
+                    }}
                   />
                 </div>
               </div>
 
               {/* TERMINATION POSITION CARD */}
-              <div style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                padding: "20px",
-                marginBottom: "24px",
-              }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
                 <h3 style={{ color: "#E50520" }}>Termination Position</h3>
 
                 {[
@@ -588,7 +533,10 @@ Attachment URL: ${uploadedFileUrl || "None"}
                   { value: "2-left", label: "Option 2 (Middle of Length)" },
                   { value: "other", label: "Option 3 (Custom)" },
                 ].map((pos) => (
-                  <label key={pos.value} style={{ display: "block", marginBottom: "6px" }}>
+                  <label
+                    key={pos.value}
+                    style={{ display: "block", marginBottom: "6px" }}
+                  >
                     <input
                       type="radio"
                       name="termination"
@@ -633,23 +581,27 @@ Attachment URL: ${uploadedFileUrl || "None"}
           {/* -------- PAGE 2 -------- */}
           {page === 2 && (
             <>
-              <h1 style={{
-                color: "#E50520",
-                fontSize: "26px",
-                fontWeight: "bold",
-                marginBottom: "20px",
-              }}>
+              <h1
+                style={{
+                  color: "#E50520",
+                  fontSize: "26px",
+                  fontWeight: "bold",
+                  marginBottom: "20px",
+                }}
+              >
                 Add-Ons
               </h1>
 
               {/* ADD-ONS CARD */}
-              <div style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                padding: "20px",
-                marginBottom: "24px",
-              }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
                 {/* SELF ADHESIVE */}
                 <div style={{ marginBottom: "20px" }}>
                   <h3 style={{ color: "#E50520" }}>Self Adhesive</h3>
@@ -670,26 +622,29 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 <div style={{ marginBottom: "20px" }}>
                   <h3 style={{ color: "#E50520" }}>Sensors</h3>
 
-<label style={{ marginRight: 10 }}>
-  <input
-    type="checkbox"
-    checked={sensors.PT100_PT1000 && "PT100/PT1000"}
-    onChange={() =>
-      setSensors({
-        ...sensors,
-        PT100_PT1000: !sensors.PT100_PT1000,
-      })
-    }
-  />{" "}
-  PT100/PT1000
-</label>
+                  <label style={{ marginRight: 10 }}>
+                    <input
+                      type="checkbox"
+                      checked={sensors.PT100_PT1000}
+                      onChange={() =>
+                        setSensors((prev) => ({
+                          ...prev,
+                          PT100_PT1000: !prev.PT100_PT1000,
+                        }))
+                      }
+                    />{" "}
+                    PT100/PT1000
+                  </label>
 
                   <label style={{ marginRight: 10 }}>
                     <input
                       type="checkbox"
                       checked={sensors.Thermocouple}
                       onChange={() =>
-                        setSensors({ ...sensors, Thermocouple: !sensors.Thermocouple })
+                        setSensors((prev) => ({
+                          ...prev,
+                          Thermocouple: !prev.Thermocouple,
+                        }))
                       }
                     />{" "}
                     Thermocouple
@@ -700,7 +655,10 @@ Attachment URL: ${uploadedFileUrl || "None"}
                       type="checkbox"
                       checked={sensors.Thermistor}
                       onChange={() =>
-                        setSensors({ ...sensors, Thermistor: !sensors.Thermistor })
+                        setSensors((prev) => ({
+                          ...prev,
+                          Thermistor: !prev.Thermistor,
+                        }))
                       }
                     />{" "}
                     Thermistor
@@ -741,23 +699,29 @@ Attachment URL: ${uploadedFileUrl || "None"}
               </div>
 
               {/* QUANTITY CARD */}
-              <div style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                padding: "20px",
-                marginBottom: "24px",
-              }}>
+              <div
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  marginBottom: "24px",
+                }}
+              >
                 <h3 style={{ color: "#E50520" }}>Quantity Requirements</h3>
 
-                <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+                <div
+                  style={{ display: "flex", gap: "10px", marginBottom: "12px" }}
+                >
                   <label style={{ width: 190, fontWeight: "bold" }}>
                     Initial Quantity:
                   </label>
                   <input
                     type="text"
                     value={initialQty}
-                    onChange={(e) => setInitialQty(e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) =>
+                      setInitialQty(e.target.value.replace(/\D/g, ""))
+                    }
                     style={{
                       width: 120,
                       padding: "6px",
@@ -774,7 +738,9 @@ Attachment URL: ${uploadedFileUrl || "None"}
                   <input
                     type="text"
                     value={annualQty}
-                    onChange={(e) => setAnnualQty(e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) =>
+                      setAnnualQty(e.target.value.replace(/\D/g, ""))
+                    }
                     style={{
                       width: 120,
                       padding: "6px",
@@ -842,104 +808,124 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 Contact Information
               </h1>
 
-<form
-  onSubmit={handleSubmit}
-  style={{
-    backgroundColor: "white",
-    borderRadius: "10px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-    padding: "20px",
-    width: "85%",
-  }}
->
+              <form
+                action="https://formspree.io/f/xzzybgol"
+                method="POST"
+                encType="multipart/form-data"
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  width: "85%",
+                }}
+              >
+                <h3 style={{ color: "#E50520" }}>Name:</h3>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  style={{ width: "100%", padding: "8px" }}
+                />
 
-                <div style={{ marginTop: 10 }}>
-                  <h3 style={{ color: "#E50520" }}>Name:</h3>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Your name"
-                    required
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div>
+                <h3 style={{ color: "#E50520" }}>Company:</h3>
+                <input
+                  type="text"
+                  name="company"
+                  style={{ width: "100%", padding: "8px" }}
+                />
 
-                <div style={{ marginTop: 10 }}>
-                  <h3 style={{ color: "#E50520" }}>Company:</h3>
-                  <input
-                    type="text"
-                    name="company"
-                    placeholder="Your company"
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div>
+                <h3 style={{ color: "#E50520" }}>Email:</h3>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  style={{ width: "100%", padding: "8px" }}
+                />
 
-                <div style={{ marginTop: 10 }}>
-                  <h3 style={{ color: "#E50520" }}>Email:</h3>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Your email"
-                    required
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div>
+                <h3 style={{ color: "#E50520" }}>Phone:</h3>
+                <input
+                  type="tel"
+                  name="phone"
+                  style={{ width: "100%", padding: "8px" }}
+                />
 
-                <div style={{ marginTop: 10 }}>
-                  <h3 style={{ color: "#E50520" }}>Phone:</h3>
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Your phone number"
-                    style={{ width: "100%", padding: "8px" }}
-                  />
-                </div>
+                <h3 style={{ color: "#E50520" }}>Additional Notes:</h3>
+                <textarea
+                  name="notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  style={{
+                    width: "100%",
+                    height: "100px",
+                    padding: "8px",
+                    resize: "vertical",
+                    fontFamily: "inherit",
+                    fontSize: "14px",
+                  }}
+                />
 
-                <div style={{ marginTop: 10 }}>
-                  <h3 style={{ color: "#E50520" }}>Additional Notes:</h3>
-                  <textarea
-                    placeholder="Enter any special requirements..."
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    style={{
-                      width: "100%",
-                      height: "100px",
-                      padding: "8px",
-                      resize: "vertical",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                    }}
-                  />
-                </div>
+                <h3 style={{ color: "#E50520", marginTop: "10px" }}>
+                  Attachment (optional):
+                </h3>
+                <input
+                  type="file"
+                  name="attachment"
+                  accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+                  style={{ width: "100%", padding: "6px" }}
+                />
 
-<div style={{ marginTop: 10 }}>
-  <h3 style={{ color: "#E50520" }}>Attachment (optional):</h3>
+                {/* Hidden config fields */}
+                <input type="hidden" name="shape" value={shape} />
+                <input type="hidden" name="width" value={widthNum} />
+                <input type="hidden" name="length" value={lengthNum} />
+                <input type="hidden" name="diameter" value={diameterNum} />
+                <input type="hidden" name="voltage" value={voltsNum} />
+                <input type="hidden" name="wattage" value={wattsNum} />
+                <input type="hidden" name="powerDensity" value={wattDensity} />
+                <input type="hidden" name="connectionType" value={connectionType} />
+                <input
+                  type="hidden"
+                  name="connectionLength"
+                  value={connectionLength}
+                />
+                <input
+                  type="hidden"
+                  name="terminationPosition"
+                  value={terminationLabel}
+                />
+                <input type="hidden" name="adhesive" value={fixingAdhesive} />
+                <input type="hidden" name="foam" value={foam} />
+                <input
+                  type="hidden"
+                  name="sensors"
+                  value={[
+                    sensors.PT100_PT1000 && "PT100/PT1000",
+                    sensors.Thermocouple && "Thermocouple",
+                    sensors.Thermistor && "Thermistor",
+                  ]
+                    .filter(Boolean)
+                    .join(", ")}
+                />
+                <input
+                  type="hidden"
+                  name="limiter"
+                  value={limiterEnabled ? "Yes" : "No"}
+                />
+                <input
+                  type="hidden"
+                  name="initialQty"
+                  value={initialQty || ""}
+                />
+                <input
+                  type="hidden"
+                  name="annualQty"
+                  value={annualQty || ""}
+                />
 
-  <input
-    type="file"
-    accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
-    onChange={handleFileSelect}
-    style={{ width: "100%", padding: "6px" }}
-  />
-
-  {uploading && (
-    <p style={{ color: "#555", marginTop: "6px" }}>
-      Uploading file…
-    </p>
-  )}
-
-  {uploadedFileUrl && (
-    <p style={{ color: "green", marginTop: "6px" }}>
-      File uploaded ✔  
-      <br />
-      <a href={uploadedFileUrl} target="_blank" rel="noreferrer">
-        View Attachment
-      </a>
-    </p>
-  )}
-</div>
-
-                <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
+                <div
+                  style={{ marginTop: "30px", display: "flex", gap: "10px" }}
+                >
                   <button
                     type="button"
                     onClick={() => setPage(2)}
@@ -985,7 +971,6 @@ Attachment URL: ${uploadedFileUrl || "None"}
         >
           <h3 style={{ marginBottom: 20 }}>Preview</h3>
 
-          {/* PREVIEW AREA — Donut Removed Completely */}
           {shape !== "Attachment" ? (
             <div
               className="preview-wrapper"
@@ -1016,13 +1001,12 @@ Attachment URL: ${uploadedFileUrl || "None"}
                     position: "relative",
                   }}
                 >
-                  {/* SENSOR PATCHES (hidden by foam) */}
+                  {/* SENSOR PATCHES */}
                   {!foamActive &&
                     selectedSensors.map((sensor, index) => {
                       const total = selectedSensors.length;
                       const offset =
                         (index - (total - 1) / 2) * (patchWidth * 1.2);
-
                       return (
                         <div
                           key={sensor}
@@ -1043,41 +1027,42 @@ Attachment URL: ${uploadedFileUrl || "None"}
                     })}
 
                   {/* THERMAL LIMITER */}
-{!foamActive && limiterEnabled && (
-  terminationPos === "1-bottom" ? (
-    // Limiter for termination position 1
-    <div
-      style={{
-        position: "absolute",
-        width: patchWidth * 0.9,
-        height: patchWidth * 0.9,
-        borderRadius: "50%",
-        backgroundColor: "#b22222",
-        border: "1px solid #800000",
-        bottom: patchHeight + 4 * scale,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 3,
-      }}
-    />
-  ) : terminationPos === "2-left" ? (
-    // Limiter for termination position 2
-    <div
-      style={{
-        position: "absolute",
-        width: patchWidth * 0.9,
-        height: patchWidth * 0.9,
-        borderRadius: "50%",
-        backgroundColor: "#b22222",
-        border: "1px solid #800000",
-        top: "50%",
-        left: patchWidth + 4 * scale,  // just inside from the left
-        transform: "translateY(-50%)",
-        zIndex: 2,   // behind the termination patch on the left
-      }}
-    />
-  ) : null
-)}
+                  {!foamActive && limiterEnabled && (
+                    <>
+                      {terminationPos === "1-bottom" && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            width: patchWidth * 0.9,
+                            height: patchWidth * 0.9,
+                            borderRadius: "50%",
+                            backgroundColor: "#b22222",
+                            border: "1px solid #800000",
+                            bottom: patchHeight + 4 * scale,
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            zIndex: 3,
+                          }}
+                        />
+                      )}
+                      {terminationPos === "2-left" && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            width: patchWidth * 0.9,
+                            height: patchWidth * 0.9,
+                            borderRadius: "50%",
+                            backgroundColor: "#b22222",
+                            border: "1px solid #800000",
+                            top: "50%",
+                            left: patchWidth + 4 * scale,
+                            transform: "translateY(-50%)",
+                            zIndex: 2,
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
 
                   {/* TERMINATION PATCHES */}
                   {!foamActive && terminationPos === "1-bottom" && (
@@ -1347,8 +1332,13 @@ Attachment URL: ${uploadedFileUrl || "None"}
             </div>
           )}
 
-          {/* Connection Length Label */}
-          <div style={{ fontWeight: "bold", fontSize: "14px", marginBottom: "20px" }}>
+          <div
+            style={{
+              fontWeight: "bold",
+              fontSize: "14px",
+              marginBottom: "20px",
+            }}
+          >
             Connection Length: {connectionLength || "0"} m
           </div>
 
@@ -1369,21 +1359,20 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 flexDirection: "column",
               }}
             >
-  {/* Termination block in side view (only when no foam) */}
-  {foam === "None" && (
-    <div
-      style={{
-        position: "absolute",
-        left: 0,
-        top: "-5px",
-        width: 18,
-        height: 5,
-        backgroundColor: "#8B0000",
-        zIndex: 2,
-      }}
-    />
-  )}
-              {/* Lead */}
+              {foam === "None" && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: "-5px",
+                    width: 18,
+                    height: 5,
+                    backgroundColor: "#8B0000",
+                    zIndex: 2,
+                  }}
+                />
+              )}
+
               <div
                 style={{
                   position: "absolute",
@@ -1396,7 +1385,6 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 }}
               />
 
-              {/* Foam */}
               {foam !== "None" && (
                 <div
                   style={{
@@ -1407,7 +1395,6 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 />
               )}
 
-              {/* Heater core */}
               <div
                 style={{
                   height: 3,
@@ -1416,7 +1403,6 @@ Attachment URL: ${uploadedFileUrl || "None"}
                 }}
               />
 
-              {/* Adhesive */}
               {fixingAdhesive === "Yes" && (
                 <div
                   style={{
@@ -1428,121 +1414,141 @@ Attachment URL: ${uploadedFileUrl || "None"}
               )}
             </div>
           </div>
-{fixingAdhesive === "Yes" && (
-  <div
-    style={{
-      color: "#000",
-      fontSize: "14px",
-      marginTop: "10px",
-    }}
-  >
-    Self-Adhesive Side
-  </div>
-)}
 
-{/* SUMMARY */}
-<div
-  style={{
-    marginTop: "30px",
-    textAlign: "left",
-    backgroundColor: "#fff",
-    padding: "15px 20px",
-    borderRadius: "8px",
-    boxShadow: "0 0 5px rgba(0,0,0,0.1)",
-    fontSize: "14px",
-    color: "#333",
-  }}
->
-  <h4
-    style={{
-      marginBottom: "10px",
-      color: "#E50520",
-      fontSize: "18px",
-    }}
-  >
-    Heater Summary
-  </h4>
+          {fixingAdhesive === "Yes" && (
+            <div
+              style={{
+                color: "#000",
+                fontSize: "14px",
+                marginTop: "10px",
+              }}
+            >
+              Self-Adhesive Side
+            </div>
+          )}
 
-  <p><strong>Dimensions:</strong> {shape}</p>
+          {/* SUMMARY */}
+          <div
+            style={{
+              marginTop: "30px",
+              textAlign: "left",
+              backgroundColor: "#fff",
+              padding: "15px 20px",
+              borderRadius: "8px",
+              boxShadow: "0 0 5px rgba(0,0,0,0.1)",
+              fontSize: "14px",
+              color: "#333",
+            }}
+          >
+            <h4
+              style={{
+                marginBottom: "10px",
+                color: "#E50520",
+                fontSize: "18px",
+              }}
+            >
+              Heater Summary
+            </h4>
 
-  {shape === "Rectangle" && (
-    <p><strong>Size:</strong> {widthNum} mm × {lengthNum} mm</p>
-  )}
+            <p>
+              <strong>Dimensions:</strong> {shape}
+            </p>
 
-  {shape === "Circle" && (
-    <p><strong>Diameter:</strong> Ø {diameterNum} mm</p>
-  )}
+            {shape === "Rectangle" && (
+              <p>
+                <strong>Size:</strong> {widthNum} mm × {lengthNum} mm
+              </p>
+            )}
 
-  {shape === "Attachment" && (
-    <p>
-      <strong>Note:</strong> Attachment drawing / file to be supplied.
-    </p>
-  )}
+            {shape === "Circle" && (
+              <p>
+                <strong>Diameter:</strong> Ø {diameterNum} mm
+              </p>
+            )}
 
-  <p><strong>Power:</strong> {wattsNum} W @ {voltsNum} V</p>
-  {shape !== "Attachment" && (
-    <p><strong>Power Density:</strong> {wattDensity} W/cm²</p>
-  )}
+            {shape === "Attachment" && (
+              <p>
+                <strong>Note:</strong> Attachment drawing / file to be supplied.
+              </p>
+            )}
 
-  <p>
-    <strong>Connection:</strong> {connectionType} ({connectionLength} m)
-  </p>
-  <p><strong>Termination:</strong> {terminationLabel}</p>
-  <p><strong>Adhesive:</strong> {fixingAdhesive}</p>
+            <p>
+              <strong>Power:</strong> {wattsNum} W @ {voltsNum} V
+            </p>
 
-  {/* FIXED CONDITIONAL WRAPPER */}
-  {(foam !== "None" ||
-    sensors.PT100_PT1000 ||
-    sensors.Thermocouple ||
-    sensors.Thermistor ||
-    limiterEnabled) && (
-    <>
-      <h4
-        style={{
-          margin: "10px 0",
-          color: "#E50520",
-          fontSize: "17px",
-        }}
-      >
-        Add-Ons
-      </h4>
+            {shape !== "Attachment" && (
+              <p>
+                <strong>Power Density:</strong> {wattDensity} W/cm²
+              </p>
+            )}
 
-      {foam !== "None" && (
-        <p><strong>Thermal Insulation:</strong> {foam} Foam</p>
-      )}
+            <p>
+              <strong>Connection:</strong> {connectionType} ({connectionLength} m)
+            </p>
+            <p>
+              <strong>Termination:</strong> {terminationLabel}
+            </p>
+            <p>
+              <strong>Adhesive:</strong> {fixingAdhesive}
+            </p>
 
-      {/* FIXED SENSOR LABEL & OUTPUT */}
-      {(sensors.PT100_PT1000 ||
-        sensors.Thermocouple ||
-        sensors.Thermistor) && (
-        <p>
-          <strong>Sensors:</strong>{" "}
-          {[
-            sensors.PT100_PT1000 && "PT100/PT1000",
-            sensors.Thermocouple && "Thermocouple",
-            sensors.Thermistor && "Thermistor",
-          ]
-            .filter(Boolean)
-            .join(", ")}
-        </p>
-      )}
+            {(foam !== "None" ||
+              sensors.PT100_PT1000 ||
+              sensors.Thermocouple ||
+              sensors.Thermistor ||
+              limiterEnabled) && (
+              <div>
+                <h4
+                  style={{
+                    margin: "10px 0",
+                    color: "#E50520",
+                    fontSize: "17px",
+                  }}
+                >
+                  Add-Ons
+                </h4>
 
-      {limiterEnabled && <p><strong>Thermal Limiter:</strong> Yes</p>}
-    </>
-  )}
+                {foam !== "None" && (
+                  <p>
+                    <strong>Thermal Insulation:</strong> {foam} Foam
+                  </p>
+                )}
 
-  {initialQty && (
-    <p>
-      <strong>Initial Quantity:</strong> {initialQty}
-    </p>
-  )}
+                {(sensors.PT100_PT1000 ||
+                  sensors.Thermocouple ||
+                  sensors.Thermistor) && (
+                  <p>
+                    <strong>Sensors:</strong>{" "}
+                    {[
+                      sensors.PT100_PT1000 && "PT100/PT1000",
+                      sensors.Thermocouple && "Thermocouple",
+                      sensors.Thermistor && "Thermistor",
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                )}
 
-  {annualQty && (
-    <p>
-      <strong>Est. Annual Quantity:</strong> {annualQty}
-    </p>
-  )}
-</div>
+                {limiterEnabled && (
+                  <p>
+                    <strong>Thermal Limiter:</strong> Yes
+                  </p>
+                )}
+              </div>
+            )}
+
+            {initialQty && (
+              <p>
+                <strong>Initial Quantity:</strong> {initialQty}
+              </p>
+            )}
+
+            {annualQty && (
+              <p>
+                <strong>Est. Annual Quantity:</strong> {annualQty}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -1550,4 +1556,3 @@ Attachment URL: ${uploadedFileUrl || "None"}
 }
 
 export default App;
-
