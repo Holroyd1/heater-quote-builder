@@ -1,0 +1,12 @@
+# Root ignore
+node_modules/
+npm-debug.log
+.DS_Store
+
+# Backend ignore
+backend/node_modules/
+backend/.env
+
+# Frontend ignore
+frontend/node_modules/
+frontend/.env
