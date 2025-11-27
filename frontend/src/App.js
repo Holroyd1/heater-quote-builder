@@ -381,7 +381,7 @@ function App() {
                   }}
                 >
                   <h3 style={{ color: "#E50520" }}>Upload Attachment</h3>
-                  <input type="file" accept=".pdf,.png,.jpg,.jpeg,.gif,.svg" />
+                  <input type="file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.gif,.svg" />
                 </div>
               )}
 
@@ -809,18 +809,18 @@ function App() {
               </h1>
 
               <form
-                action="https://formspree.io/f/xzzybgol"
-                method="POST"
-                encType="multipart/form-data"
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "10px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                  padding: "20px",
-                  width: "85%",
-                }}
-              >
-  <input type="hidden" name="_uploadcare" value="true" />
+  action="https://formspree.io/f/mnnkdpgq"
+  method="POST"
+  enctype="multipart/form-data"
+  style={{
+    backgroundColor: "white",
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    padding: "20px",
+    width: "85%",
+  }}
+>
+<input type="hidden" name="_upload" value="true" />
 
                 <h3 style={{ color: "#E50520" }}>Name:</h3>
                 <input
@@ -870,12 +870,12 @@ function App() {
                 <h3 style={{ color: "#E50520", marginTop: "10px" }}>
                   Attachment (optional):
                 </h3>
-                <input
-                  type="file"
-                  name="attachment"
-                  accept=".pdf,.png,.jpg,.jpeg,.gif,.svg,.dxf,.dwg"
-                  style={{ width: "100%", padding: "6px" }}
-                />
+               <input
+  type="file"
+  name="file"
+  accept="*/*"
+  style={{ width: "100%", padding: "6px" }}
+/>
 
                 {/* Hidden config fields */}
                 <input type="hidden" name="shape" value={shape} />
