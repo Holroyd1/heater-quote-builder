@@ -231,7 +231,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     min-height: 100%;
   }
 
-  @media (max-width: 768px) {
+ @media (max-width: 768px) {
   .main-layout {
     flex-direction: column !important;
     width: 100% !important;
@@ -245,8 +245,15 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     overflow-x: hidden !important;
   }
 
-  .right-panel {
-    margin-top: 20px !important;
+  /* NEW: Make step bar fit */
+  .step-bar {
+    gap: 6px !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .step-bar div[style*="height: 2px"] {
+    width: 50px !important;  /* shrink connector lines */
   }
 }
 `}</style>
