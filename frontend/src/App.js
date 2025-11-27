@@ -232,6 +232,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
   }
 
  @media (max-width: 768px) {
+
   .main-layout {
     flex-direction: column !important;
     width: 100% !important;
@@ -245,7 +246,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     overflow-x: hidden !important;
   }
 
-  /* NEW: Make step bar fit */
+  /* Step bar improvements */
   .step-bar {
     gap: 6px !important;
     width: 100% !important;
@@ -253,7 +254,12 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
   }
 
   .step-bar div[style*="height: 2px"] {
-    width: 50px !important;  /* shrink connector lines */
+    width: 50px !important;  /* connector line width */
+  }
+
+  .step-label {
+    font-size: 10px !important;
+    white-space: nowrap !important;
   }
 }
 `}</style>
