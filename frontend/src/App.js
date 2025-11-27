@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 function App() {
   const [page, setPage] = useState(1);
@@ -28,6 +28,15 @@ function App() {
   const [annualQty, setAnnualQty] = useState("");
   const [notes, setNotes] = useState("");
 
+  // --- Attachments + submit state ---
+  const [attachmentFilePage1, setAttachmentFilePage1] = useState(null);
+  const [attachmentFilePage3, setAttachmentFilePage3] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Hidden file input refs (persistent, never unmounted)
+  const fileInputPage1Ref = useRef(null);
+  const fileInputPage3Ref = useRef(null);
+
   // ----- Numeric conversions -----
   const widthNum = parseFloat(width) || 0;
   const lengthNum = parseFloat(length) || 0;
@@ -55,6 +64,9 @@ function App() {
     setInitialQty("");
     setAnnualQty("");
     setNotes("");
+
+    setAttachmentFilePage1(null);
+    setAttachmentFilePage3(null);
 
     setPage(1);
   };
@@ -115,6 +127,48 @@ function App() {
       : terminationPos === "2-left"
       ? "Middle of Length"
       : "Custom";
+
+  // ----- FORM SUBMIT HANDLER (Formspree + 2 attachments) -----
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(e.target);
+
+      // Append page 1 attachment (only if user selected a file)
+      if (attachmentFilePage1) {
+        formData.append("file1", attachmentFilePage1);
+      }
+
+      // Append page 3 attachment (only if user selected a file)
+      if (attachmentFilePage3) {
+        formData.append("file2", attachmentFilePage3);
+      }
+
+      const response = await fetch("https://formspree.io/f/mnnkdpgq", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (response.ok) {
+        alert("Thank you! Your enquiry has been sent.");
+        e.target.reset();
+        setNotes("");
+        setAttachmentFilePage1(null);
+        setAttachmentFilePage3(null);
+      } else {
+        alert("There was a problem sending your enquiry. Please try again.");
+      }
+    } catch (err) {
+      alert("There was a problem sending your enquiry. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div style={{ fontFamily: "Arial", position: "relative", paddingTop: "84px" }}>
@@ -259,7 +313,7 @@ function App() {
 
                 {shape === "Attachment" && (
                   <p style={{ fontSize: "13px", color: "#555" }}>
-                    Upload your drawing in the Contact Information step.
+                    Upload your drawing in the Attachment section below.
                   </p>
                 )}
 
@@ -381,7 +435,43 @@ function App() {
                   }}
                 >
                   <h3 style={{ color: "#E50520" }}>Upload Attachment</h3>
-                  <input type="file" name="attachment" accept=".pdf,.png,.jpg,.jpeg,.gif,.svg" />
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "#555",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    Attach your heater shape drawing (PDF or image).
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      fileInputPage1Ref.current &&
+                      fileInputPage1Ref.current.click()
+                    }
+                    style={{
+                      padding: "8px 14px",
+                      borderRadius: "6px",
+                      border: "1px solid #ccc",
+                      backgroundColor: "#f7f7f7",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                    Choose file
+                  </button>
+                  {attachmentFilePage1 && (
+                    <div
+                      style={{
+                        marginTop: "8px",
+                        fontSize: "12px",
+                        color: "#333",
+                      }}
+                    >
+                      Selected: {attachmentFilePage1.name}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -726,7 +816,8 @@ function App() {
                       width: 120,
                       padding: "6px",
                       borderRadius: "6px",
-                      border: "1px solid #ccc",
+                      border: "1px solid " +
+                        "#ccc",
                     }}
                   />
                 </div>
@@ -809,19 +900,16 @@ function App() {
               </h1>
 
               <form
-  action="https://formspree.io/f/mnnkdpgq"
-  method="POST"
-  enctype="multipart/form-data"
-  style={{
-    backgroundColor: "white",
-    borderRadius: "10px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-    padding: "20px",
-    width: "85%",
-  }}
->
-<input type="hidden" name="_upload" value="true" />
-
+                onSubmit={handleSubmit}
+                encType="multipart/form-data"
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "10px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  padding: "20px",
+                  width: "85%",
+                }}
+              >
                 <h3 style={{ color: "#E50520" }}>Name:</h3>
                 <input
                   type="text"
@@ -867,17 +955,44 @@ function App() {
                   }}
                 />
 
-                <h3 style={{ color: "#E50520", marginTop: "10px" }}>
+                <h3
+                  style={{
+                    color: "#E50520",
+                    marginTop: "10px",
+                  }}
+                >
                   Attachment (optional):
                 </h3>
-               <input
-  type="file"
-  name="file"
-  accept="*/*"
-  style={{ width: "100%", padding: "6px" }}
-/>
+                <button
+                  type="button"
+                  onClick={() =>
+                    fileInputPage3Ref.current &&
+                    fileInputPage3Ref.current.click()
+                  }
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: "6px",
+                    border: "1px solid #ccc",
+                    backgroundColor: "#f7f7f7",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Choose file
+                </button>
+                {attachmentFilePage3 && (
+                  <div
+                    style={{
+                      marginTop: "8px",
+                      fontSize: "12px",
+                      color: "#333",
+                    }}
+                  >
+                    Selected: {attachmentFilePage3.name}
+                  </div>
+                )}
 
-                {/* Hidden config fields */}
+                {/* HIDDEN FIELDS */}
                 <input type="hidden" name="shape" value={shape} />
                 <input type="hidden" name="width" value={widthNum} />
                 <input type="hidden" name="length" value={lengthNum} />
@@ -885,7 +1000,11 @@ function App() {
                 <input type="hidden" name="voltage" value={voltsNum} />
                 <input type="hidden" name="wattage" value={wattsNum} />
                 <input type="hidden" name="powerDensity" value={wattDensity} />
-                <input type="hidden" name="connectionType" value={connectionType} />
+                <input
+                  type="hidden"
+                  name="connectionType"
+                  value={connectionType}
+                />
                 <input
                   type="hidden"
                   name="connectionLength"
@@ -896,7 +1015,11 @@ function App() {
                   name="terminationPosition"
                   value={terminationLabel}
                 />
-                <input type="hidden" name="adhesive" value={fixingAdhesive} />
+                <input
+                  type="hidden"
+                  name="adhesive"
+                  value={fixingAdhesive}
+                />
                 <input type="hidden" name="foam" value={foam} />
                 <input
                   type="hidden"
@@ -925,9 +1048,7 @@ function App() {
                   value={annualQty || ""}
                 />
 
-                <div
-                  style={{ marginTop: "30px", display: "flex", gap: "10px" }}
-                >
+                <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
                   <button
                     type="button"
                     onClick={() => setPage(2)}
@@ -944,15 +1065,17 @@ function App() {
 
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     style={{
                       padding: "10px 20px",
                       backgroundColor: "green",
                       color: "white",
                       border: "none",
                       borderRadius: "4px",
+                      opacity: isSubmitting ? 0.6 : 1,
                     }}
                   >
-                    Submit Enquiry
+                    {isSubmitting ? "Submitting..." : "Submit Enquiry"}
                   </button>
                 </div>
               </form>
@@ -1553,6 +1676,30 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* HIDDEN PERSISTENT FILE INPUTS (never unmounted) */}
+      <input
+        ref={fileInputPage1Ref}
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+        style={{ display: "none" }}
+        onChange={(e) =>
+          setAttachmentFilePage1(
+            e.target.files && e.target.files[0] ? e.target.files[0] : null
+          )
+        }
+      />
+      <input
+        ref={fileInputPage3Ref}
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+        style={{ display: "none" }}
+        onChange={(e) =>
+          setAttachmentFilePage3(
+            e.target.files && e.target.files[0] ? e.target.files[0] : null
+          )
+        }
+      />
     </div>
   );
 }
