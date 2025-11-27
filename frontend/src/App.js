@@ -820,6 +820,8 @@ function App() {
                   width: "85%",
                 }}
               >
+  <input type="hidden" name="_uploadcare" value="true" />
+
                 <h3 style={{ color: "#E50520" }}>Name:</h3>
                 <input
                   type="text"
@@ -871,7 +873,7 @@ function App() {
                 <input
                   type="file"
                   name="attachment"
-                  accept=".pdf,.png,.jpg,.jpeg,.gif,.svg"
+                  accept=".pdf,.png,.jpg,.jpeg,.gif,.svg,.dxf,.dwg"
                   style={{ width: "100%", padding: "6px" }}
                 />
 
