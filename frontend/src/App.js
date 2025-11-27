@@ -232,18 +232,23 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
   }
 
   @media (max-width: 768px) {
-    .main-layout {
-      flex-direction: column !important;
-      width: 100% !important;
-    }
-    .left-panel,
-    .right-panel {
-      width: 100% !important;
-    }
-    .right-panel {
-      margin-top: 20px !important;
-    }
+  .main-layout {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
+
+  .left-panel,
+  .right-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  .right-panel {
+    margin-top: 20px !important;
+  }
+}
 `}</style>
 
       {/* STEP BAR */}
