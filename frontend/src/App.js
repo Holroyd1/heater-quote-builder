@@ -91,9 +91,9 @@ function App() {
 
   if (shape === "Rectangle") {
     const largest = Math.max(widthNum, lengthNum);
-    scale = Math.min(maxPreview / largest, 1);
+    scale = Math.min(maxPreview / (largest || 1), 1);
   } else if (shape === "Circle") {
-    scale = Math.min(maxPreview / diameterNum, 1);
+    scale = Math.min(maxPreview / (diameterNum || 1), 1);
   }
 
   scale = Math.max(scale, minScale);
@@ -128,6 +128,47 @@ function App() {
       ? "Middle of Length"
       : "Custom";
 
+  // ----- FORMATTED HEATER SUMMARY STRING (this is what gets sent) -----
+  const heaterSummaryString = `Heater Summary
+-------------------------
+Dimensions: ${shape}
+${
+  shape === "Rectangle"
+    ? `Size: ${widthNum} mm × ${lengthNum} mm`
+    : shape === "Circle"
+    ? `Diameter: Ø ${diameterNum} mm`
+    : "Attachment Mode (drawing supplied)"
+}
+Power: ${wattsNum} W @ ${voltsNum} V
+${shape !== "Attachment" ? `Power Density: ${wattDensity} W/cm²` : ""}
+Connection: ${connectionType} (${connectionLength || 0} m)
+Termination: ${terminationLabel}
+Adhesive: ${fixingAdhesive}
+
+Add-Ons
+-------------------------
+${foam !== "None" ? `Thermal Insulation: ${foam} Foam` : ""}
+${
+  selectedSensors.length
+    ? `Sensors: ${selectedSensors
+        .map((s) =>
+          s === "PT100_PT1000"
+            ? "PT100/PT1000"
+            : s === "Thermocouple"
+            ? "Thermocouple"
+            : "Thermistor"
+        )
+        .join(", ")}`
+    : ""
+}
+${limiterEnabled ? "Thermal Limiter: Yes" : ""}
+
+Quantities
+-------------------------
+${initialQty ? `Initial Quantity: ${initialQty}` : ""}
+${annualQty ? `Annual Quantity: ${annualQty}` : ""}
+`;
+
   // ----- FORM SUBMIT HANDLER (Formspree + 2 attachments) -----
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,6 +176,9 @@ function App() {
 
     try {
       const formData = new FormData(e.target);
+
+      // Append heater summary as a single field
+      formData.append("heaterSummary", heaterSummaryString);
 
       // Append page 1 attachment (only if user selected a file)
       if (attachmentFilePage1) {
@@ -816,8 +860,7 @@ function App() {
                       width: 120,
                       padding: "6px",
                       borderRadius: "6px",
-                      border: "1px solid " +
-                        "#ccc",
+                      border: "1px solid #ccc",
                     }}
                   />
                 </div>
@@ -955,12 +998,7 @@ function App() {
                   }}
                 />
 
-                <h3
-                  style={{
-                    color: "#E50520",
-                    marginTop: "10px",
-                  }}
-                >
+                <h3 style={{ color: "#E50520", marginTop: "10px" }}>
                   Attachment (optional):
                 </h3>
                 <button
@@ -992,61 +1030,7 @@ function App() {
                   </div>
                 )}
 
-                {/* HIDDEN FIELDS */}
-                <input type="hidden" name="shape" value={shape} />
-                <input type="hidden" name="width" value={widthNum} />
-                <input type="hidden" name="length" value={lengthNum} />
-                <input type="hidden" name="diameter" value={diameterNum} />
-                <input type="hidden" name="voltage" value={voltsNum} />
-                <input type="hidden" name="wattage" value={wattsNum} />
-                <input type="hidden" name="powerDensity" value={wattDensity} />
-                <input
-                  type="hidden"
-                  name="connectionType"
-                  value={connectionType}
-                />
-                <input
-                  type="hidden"
-                  name="connectionLength"
-                  value={connectionLength}
-                />
-                <input
-                  type="hidden"
-                  name="terminationPosition"
-                  value={terminationLabel}
-                />
-                <input
-                  type="hidden"
-                  name="adhesive"
-                  value={fixingAdhesive}
-                />
-                <input type="hidden" name="foam" value={foam} />
-                <input
-                  type="hidden"
-                  name="sensors"
-                  value={[
-                    sensors.PT100_PT1000 && "PT100/PT1000",
-                    sensors.Thermocouple && "Thermocouple",
-                    sensors.Thermistor && "Thermistor",
-                  ]
-                    .filter(Boolean)
-                    .join(", ")}
-                />
-                <input
-                  type="hidden"
-                  name="limiter"
-                  value={limiterEnabled ? "Yes" : "No"}
-                />
-                <input
-                  type="hidden"
-                  name="initialQty"
-                  value={initialQty || ""}
-                />
-                <input
-                  type="hidden"
-                  name="annualQty"
-                  value={annualQty || ""}
-                />
+                {/* No technical hidden fields here; only contact + heaterSummary get sent */}
 
                 <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
                   <button
