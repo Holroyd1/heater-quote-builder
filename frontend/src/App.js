@@ -217,9 +217,34 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
   return (
     <div style={{ fontFamily: "Arial", position: "relative", paddingTop: "84px" }}>
       <style>{`
-        html { overflow-y: scroll; }
-        .range-red { accent-color: #E50520; }
-      `}</style>
+  html { overflow-y: scroll; }
+  .range-red { accent-color: #E50520; }
+
+  /* MOBILE FIXES */
+  html, body {
+    height: 100%;
+    overflow-y: auto !important;
+  }
+
+  #root {
+    height: auto;
+    min-height: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .main-layout {
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+    .left-panel,
+    .right-panel {
+      width: 100% !important;
+    }
+    .right-panel {
+      margin-top: 20px !important;
+    }
+  }
+`}</style>
 
       {/* STEP BAR */}
       <div
@@ -1323,6 +1348,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                         transform: "translateX(-50%)",
                         fontSize: "12px",
                         fontWeight: "bold",
+whiteSpace: "nowrap",
                       }}
                     >
                       {widthNum} mm
@@ -1417,6 +1443,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                       transform: "translateX(-50%)",
                       fontSize: "12px",
                       fontWeight: "bold",
+whiteSpace: "nowrap",
                     }}
                   >
                     Ø {diameterNum} mm
