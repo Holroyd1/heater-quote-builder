@@ -333,13 +333,16 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 @media (max-width: 500px) {
   .sensor-row {
     display: flex;
-    flex-wrap: nowrap !important;
-    gap: 6px !important;
+    flex-wrap: nowrap;
+    gap: 8px;
+    justify-content: space-between; /* prevents shifting */
+    width: 100%; /* prevents overflow */
   }
 
   .sensor-row label {
-    white-space: nowrap !important;
-    font-size: 12px !important;
+    white-space: nowrap;
+    font-size: 12px; /* slightly smaller but still consistent */
+    flex-shrink: 1; /* allows labels to compress safely */
   }
 }
 `}</style>
