@@ -260,6 +260,76 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
       <style>{`
   html { overflow-y: scroll; }
   .range-red { accent-color: #E50520; }
+
+  /* ------------------------------
+     MOBILE RESPONSIVE FIXES
+  ------------------------------*/
+
+  @media (max-width: 900px) {
+    .main-layout {
+      flex-direction: column !important;
+      padding: 10px !important;
+    }
+
+    .left-panel,
+    .right-panel {
+      width: 100% !important;
+      padding: 0 !important;
+    }
+
+    .right-panel {
+      margin-top: 25px !important;
+    }
+
+    .step-bar {
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+    }
+
+    .step-label {
+      font-size: 11px !important;
+    }
+
+    .step-connector {
+      display: none !important;
+    }
+
+    /* Form inputs */
+    input,
+    select,
+    textarea {
+      font-size: 14px !important;
+    }
+
+    /* Cards */
+    .card {
+      padding: 16px !important;
+    }
+
+    /* Preview wrapper */
+    .preview-wrapper {
+      transform: scale(0.9);
+    }
+  }
+
+  @media (max-width: 500px) {
+    .preview-wrapper {
+      transform: scale(0.75);
+    }
+
+    .step-label {
+      font-size: 9px !important;
+    }
+
+    .step-bar {
+      justify-content: center !important;
+    }
+
+    .preview-wrapper {
+      width: 100% !important;
+      overflow-x: auto !important;
+    }
+  }
 `}</style>
 
       {/* STEP BAR */}
@@ -375,6 +445,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
               {/* DIMENSIONS CARD */}
               <div
+  className="card"
                 style={{
                   backgroundColor: "white",
                   borderRadius: "10px",
@@ -514,6 +585,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
               {/* ATTACHMENT FILE UPLOAD (ONLY WHEN Attachment) */}
               {shape === "Attachment" && (
                 <div
+  className="card"
                   style={{
                     backgroundColor: "white",
                     borderRadius: "10px",
@@ -565,6 +637,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
               {/* POWER CARD */}
               <div
+  className="card"
                 style={{
                   backgroundColor: "white",
                   borderRadius: "10px",
@@ -649,6 +722,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
               {/* CONNECTION CARD */}
               <div
+  className="card"
                 style={{
                   backgroundColor: "white",
                   borderRadius: "10px",
@@ -696,6 +770,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
               {/* TERMINATION POSITION CARD */}
               <div
+  className="card"
                 style={{
                   backgroundColor: "white",
                   borderRadius: "10px",
@@ -772,6 +847,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
               {/* ADD-ONS CARD */}
               <div
+  className="card"
                 style={{
                   backgroundColor: "white",
                   borderRadius: "10px",
@@ -878,6 +954,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
               {/* QUANTITY CARD */}
               <div
+  className="card"
                 style={{
                   backgroundColor: "white",
                   borderRadius: "10px",
