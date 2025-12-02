@@ -272,37 +272,47 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     min-height: 100%;
   }
 
- @media (max-width: 768px) {
+  @media (max-width: 768px) {
 
-  .main-layout {
-    flex-direction: column !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    .main-layout {
+      flex-direction: column !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .left-panel,
+    .right-panel {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
+    /* Step bar improvements */
+    .step-bar {
+      gap: 6px !important;
+      width: 100% !important;
+      justify-content: space-between !important;
+    }
+
+    .step-label {
+      font-size: 10px !important;
+      white-space: nowrap !important;
+    }
+
+    /* NEW: Better connector width (fixes “Contact Information” cut-off) */
+    .step-connector {
+      width: 50px !important;
+      flex-shrink: 1 !important;
+    }
   }
 
-  .left-panel,
-  .right-panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
+  /* NEW: Prevent wrapping of Sensor + Foam options */
+  .addon-option {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
+    white-space: nowrap;
   }
-
-  /* Step bar improvements */
-  .step-bar {
-    gap: 6px !important;
-    width: 100% !important;
-    justify-content: space-between !important;
-  }
-
-  .step-bar div[style*="height: 2px"] {
-    width: 50px !important;  /* connector line width */
-  }
-
-  .step-label {
-    font-size: 10px !important;
-    white-space: nowrap !important;
-  }
-}
 `}</style>
 
       {/* STEP BAR */}
@@ -841,7 +851,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 <div style={{ marginBottom: "20px" }}>
                   <h3 style={{ color: "#E50520" }}>Sensors</h3>
 
-                  <label style={{ marginRight: 10 }}>
+                  <label className="addon-option">
                     <input
                       type="checkbox"
                       checked={sensors.PT100_PT1000}
@@ -855,7 +865,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                     PT100/PT1000
                   </label>
 
-                  <label style={{ marginRight: 10 }}>
+                  <label className="addon-option">
                     <input
                       type="checkbox"
                       checked={sensors.Thermocouple}
@@ -904,7 +914,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 <div>
                   <h3 style={{ color: "#E50520" }}>Thermal Insulation</h3>
                   {["None", "3mm", "5mm", "8mm", "12mm"].map((f) => (
-                    <label key={f} style={{ marginRight: 12 }}>
+                    <label key={f} className="addon-option">
                       <input
                         type="radio"
                         name="foam"
