@@ -1,6 +1,27 @@
 import React, { useState, useRef, useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    const sendHeightToParent = () => {
+      const height = document.body.scrollHeight;
+      window.parent.postMessage({ height }, "*");
+      console.log("Sending height to parent:", height);
+    };
+
+    window.addEventListener("resize", sendHeightToParent);
+    sendHeightToParent(); // initial send
+
+    // Observe dynamic React content (form changes, pagination, etc.)
+    const observer = new MutationObserver(sendHeightToParent);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    console.log("Iframe snippet running");
+
+    return () => {
+      window.removeEventListener("resize", sendHeightToParent);
+      observer.disconnect();
+    };
+  }, []);
   const [page, setPage] = useState(1);
 
   // --- Page 1 States ---
@@ -349,14 +370,15 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 </span>
               </div>
               {idx < arr.length - 1 && (
-                <div
-                  style={{
-                    width: 120,
-                    height: 2,
-                    backgroundColor: page >= arr[idx + 1].num ? "#E50520" : "#cfcfcf",
-                  }}
-                />
-              )}
+  <div
+    className="step-connector"
+    style={{
+      width: 120,
+      height: 2,
+      backgroundColor: page >= arr[idx + 1].num ? "#E50520" : "#cfcfcf",
+    }}
+  />
+)}
             </React.Fragment>
           ))}
         </div>
