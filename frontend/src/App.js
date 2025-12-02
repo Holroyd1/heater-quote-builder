@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 function App() {
   const [page, setPage] = useState(1);
@@ -36,6 +36,26 @@ function App() {
   // Hidden file input refs (persistent, never unmounted)
   const fileInputPage1Ref = useRef(null);
   const fileInputPage3Ref = useRef(null);
+
+// Automatic height sync for iframe embedding
+useEffect(() => {
+  function sendHeightToParent() {
+    const height = document.body.scrollHeight;
+    window.parent.postMessage({ height }, "*");
+  }
+
+  window.addEventListener("load", sendHeightToParent);
+  window.addEventListener("resize", sendHeightToParent);
+
+  const observer = new MutationObserver(sendHeightToParent);
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  return () => {
+    window.removeEventListener("load", sendHeightToParent);
+    window.removeEventListener("resize", sendHeightToParent);
+    observer.disconnect();
+  };
+}, []);
 
   // ----- Numeric conversions -----
   const widthNum = parseFloat(width) || 0;
