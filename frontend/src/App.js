@@ -260,55 +260,6 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
       <style>{`
   html { overflow-y: scroll; }
   .range-red { accent-color: #E50520; }
-
-  /* MOBILE FIXES */
-  html, body {
-    height: 100%;
-    overflow-y: auto !important;
-  }
-
-  #root {
-    height: auto;
-    min-height: 100%;
-  }
-
-  /* FIX STEP BAR ACROSS ALL TABLET + PHONE SIZES */
-  @media (max-width: 1200px) {
-
-    .step-bar {
-      gap: 6px !important;
-      width: 100% !important;
-      justify-content: space-between !important;
-      padding: 0 10px !important;
-    }
-
-    .step-label {
-      font-size: 11px !important;
-      white-space: nowrap !important;
-    }
-
-    .step-connector {
-      width: 70px !important;
-      flex-shrink: 1 !important;
-    }
-  }
-
-  @media (max-width: 850px) {
-    .step-label {
-      font-size: 9px !important;
-    }
-    .step-connector {
-      width: 50px !important;
-    }
-  }
-
-  /* Prevent wrapping of Sensor + Foam options */
-  .addon-option {
-    display: inline-flex !important;
-    align-items: center !important;
-    margin-right: 12px !important;
-    white-space: nowrap !important;
-  }
 `}</style>
 
       {/* STEP BAR */}
@@ -365,15 +316,17 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                   {step.num}
                 </div>
                 <span
-                  className="step-label"
-                  style={{
-                    marginLeft: 8,
-                    color: page === step.num ? "#E50520" : "#666",
-                    fontWeight: page === step.num ? "bold" : "normal",
-                  }}
-                >
-                  {step.label}
-                </span>
+  className="step-label"
+  style={{
+    marginLeft: 8,
+    color: page === step.num ? "#E50520" : "#666",
+    fontWeight: page === step.num ? "bold" : "normal",
+    fontSize: window.innerWidth < 500 ? "10px" : "14px",
+    whiteSpace: "nowrap",
+  }}
+>
+  {step.label}
+</span>
               </div>
               {idx < arr.length - 1 && (
   <div
@@ -847,7 +800,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 <div style={{ marginBottom: "20px" }}>
                   <h3 style={{ color: "#E50520" }}>Sensors</h3>
 
-                  <label className="addon-option">
+                  <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
                     <input
                       type="checkbox"
                       checked={sensors.PT100_PT1000}
@@ -861,7 +814,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                     PT100/PT1000
                   </label>
 
-                  <label className="addon-option">
+                  <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
                     <input
                       type="checkbox"
                       checked={sensors.Thermocouple}
@@ -910,7 +863,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 <div>
                   <h3 style={{ color: "#E50520" }}>Thermal Insulation</h3>
                   {["None", "3mm", "5mm", "8mm", "12mm"].map((f) => (
-                    <label key={f} className="addon-option">
+                    <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
                       <input
                         type="radio"
                         name="foam"
