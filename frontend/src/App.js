@@ -330,6 +330,18 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
       overflow-x: auto !important;
     }
   }
+@media (max-width: 500px) {
+  .sensor-row {
+    display: flex;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+  }
+
+  .sensor-row label {
+    white-space: nowrap !important;
+    font-size: 12px !important;
+  }
+}
 `}</style>
 
       {/* STEP BAR */}
@@ -873,7 +885,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 </div>
 
                 {/* SENSORS */}
-                <div style={{ marginBottom: "20px" }}>
+                <div className="sensor-row" style={{ marginBottom: "20px" }}>
                   <h3 style={{ color: "#E50520" }}>Sensors</h3>
 
                   <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
