@@ -272,46 +272,42 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     min-height: 100%;
   }
 
-  @media (max-width: 768px) {
+  /* FIX STEP BAR ACROSS ALL TABLET + PHONE SIZES */
+  @media (max-width: 1200px) {
 
-    .main-layout {
-      flex-direction: column !important;
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-
-    .left-panel,
-    .right-panel {
-      width: 100% !important;
-      max-width: 100% !important;
-      overflow-x: hidden !important;
-    }
-
-    /* Step bar improvements */
     .step-bar {
       gap: 6px !important;
       width: 100% !important;
       justify-content: space-between !important;
+      padding: 0 10px !important;
     }
 
     .step-label {
-      font-size: 10px !important;
+      font-size: 11px !important;
       white-space: nowrap !important;
     }
 
-    /* NEW: Better connector width (fixes “Contact Information” cut-off) */
     .step-connector {
-      width: 50px !important;
+      width: 70px !important;
       flex-shrink: 1 !important;
     }
   }
 
-  /* NEW: Prevent wrapping of Sensor + Foam options */
+  @media (max-width: 850px) {
+    .step-label {
+      font-size: 9px !important;
+    }
+    .step-connector {
+      width: 50px !important;
+    }
+  }
+
+  /* Prevent wrapping of Sensor + Foam options */
   .addon-option {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 12px;
-    white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center !important;
+    margin-right: 12px !important;
+    white-space: nowrap !important;
   }
 `}</style>
 
