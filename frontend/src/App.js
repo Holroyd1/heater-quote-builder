@@ -325,28 +325,33 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
   }
 
   /* ============================
-     SENSOR ROW FIX (phones)
-     ============================ */
-  @media (max-width: 600px) {
-    .sensor-row {
-      display: flex !important;
-      flex-direction: row !important;
-      flex-wrap: nowrap !important;
-      justify-content: space-between !important;
-      align-items: center !important;
-      width: 100% !important;
-    }
-
-    .sensor-row label {
-      white-space: nowrap !important;
-      font-size: 12px !important;
-      flex: 1 1 auto !important;
-    }
-
-    .sensor-row input[type="checkbox"] {
-      flex-shrink: 0 !important;
-    }
+   SENSOR ROW FIX (phones)
+   ============================ */
+@media (max-width: 600px) {
+  .sensor-row {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 6px !important;          /* <-- NEW */
+    column-gap: 6px !important;   /* <-- NEW for Safari */
   }
+
+  .sensor-row label {
+    display: flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    font-size: 13px !important;   /* slightly larger, matches the UI */
+    flex: 1 1 auto !important;
+  }
+
+  .sensor-row input[type="checkbox"] {
+    flex-shrink: 0 !important;
+    margin-right: 4px !important; /* improves spacing */
+  }
+}
 
 `}</style>
 
