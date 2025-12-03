@@ -257,14 +257,13 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
   return (
     <div style={{ fontFamily: "Arial", position: "relative", paddingTop: "84px" }}>
-      <style>{`
+     <style>{`
   html { overflow-y: scroll; }
   .range-red { accent-color: #E50520; }
 
-  /* ------------------------------
+  /* ============================
      MOBILE RESPONSIVE FIXES
-  ------------------------------*/
-
+     ============================ */
   @media (max-width: 900px) {
     .main-layout {
       flex-direction: column !important;
@@ -278,7 +277,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     }
 
     .right-panel {
-      margin-top: 25px !important;
+      margin-top: 25px;
     }
 
     .step-bar {
@@ -294,19 +293,16 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
       display: none !important;
     }
 
-    /* Form inputs */
+    .card {
+      padding: 16px !important;
+    }
+
     input,
     select,
     textarea {
       font-size: 14px !important;
     }
 
-    /* Cards */
-    .card {
-      padding: 16px !important;
-    }
-
-    /* Preview wrapper */
     .preview-wrapper {
       transform: scale(0.9);
     }
@@ -315,6 +311,8 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
   @media (max-width: 500px) {
     .preview-wrapper {
       transform: scale(0.75);
+      width: 100% !important;
+      overflow-x: auto;
     }
 
     .step-label {
@@ -324,28 +322,34 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
     .step-bar {
       justify-content: center !important;
     }
+  }
 
-    .preview-wrapper {
+  /* ============================
+     SENSOR ROW FIX (phones)
+     ============================ */
+  @media (max-width: 600px) {
+    .sensor-row {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      justify-content: space-between !important;
+      align-items: center !important;
       width: 100% !important;
-      overflow-x: auto !important;
+    }
+
+    .sensor-row label {
+      white-space: nowrap !important;
+      font-size: 12px !important;
+      flex: 1 1 auto !important;
+    }
+
+    .sensor-row input[type="checkbox"] {
+      flex-shrink: 0 !important;
     }
   }
-@media (max-width: 500px) {
-  .sensor-row {
-    display: flex;
-    flex-wrap: nowrap;
-    gap: 8px;
-    justify-content: space-between; /* prevents shifting */
-    width: 100%; /* prevents overflow */
-  }
 
-  .sensor-row label {
-    white-space: nowrap;
-    font-size: 12px; /* slightly smaller but still consistent */
-    flex-shrink: 1; /* allows labels to compress safely */
-  }
-}
 `}</style>
+
 
       {/* STEP BAR */}
       <div
@@ -888,51 +892,53 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                 </div>
 
                 {/* SENSORS */}
-                <div className="sensor-row" style={{ marginBottom: "20px" }}>
-                  <h3 style={{ color: "#E50520" }}>Sensors</h3>
+<div style={{ marginBottom: "20px" }}>
+  <h3 style={{ color: "#E50520" }}>Sensors</h3>
 
-                  <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
-                    <input
-                      type="checkbox"
-                      checked={sensors.PT100_PT1000}
-                      onChange={() =>
-                        setSensors((prev) => ({
-                          ...prev,
-                          PT100_PT1000: !prev.PT100_PT1000,
-                        }))
-                      }
-                    />{" "}
-                    PT100/PT1000
-                  </label>
+  <div className="sensor-row">
+    <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
+      <input
+        type="checkbox"
+        checked={sensors.PT100_PT1000}
+        onChange={() =>
+          setSensors((prev) => ({
+            ...prev,
+            PT100_PT1000: !prev.PT100_PT1000,
+          }))
+        }
+      />{" "}
+      PT100/PT1000
+    </label>
 
-                  <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
-                    <input
-                      type="checkbox"
-                      checked={sensors.Thermocouple}
-                      onChange={() =>
-                        setSensors((prev) => ({
-                          ...prev,
-                          Thermocouple: !prev.Thermocouple,
-                        }))
-                      }
-                    />{" "}
-                    Thermocouple
-                  </label>
+    <label style={{ marginRight: 10, whiteSpace: "nowrap" }}>
+      <input
+        type="checkbox"
+        checked={sensors.Thermocouple}
+        onChange={() =>
+          setSensors((prev) => ({
+            ...prev,
+            Thermocouple: !prev.Thermocouple,
+          }))
+        }
+      />{" "}
+      Thermocouple
+    </label>
 
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={sensors.Thermistor}
-                      onChange={() =>
-                        setSensors((prev) => ({
-                          ...prev,
-                          Thermistor: !prev.Thermistor,
-                        }))
-                      }
-                    />{" "}
-                    Thermistor
-                  </label>
-                </div>
+    <label style={{ whiteSpace: "nowrap" }}>
+      <input
+        type="checkbox"
+        checked={sensors.Thermistor}
+        onChange={() =>
+          setSensors((prev) => ({
+            ...prev,
+            Thermistor: !prev.Thermistor,
+          }))
+        }
+      />{" "}
+      Thermistor
+    </label>
+  </div>
+</div>
 
                 {/* THERMAL LIMITER */}
                 <div style={{ marginBottom: "20px" }}>
