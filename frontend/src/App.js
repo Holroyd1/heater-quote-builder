@@ -1,28 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
 
 function App() {
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
     const sendHeightToParent = () => {
       const height = document.body.scrollHeight;
       window.parent.postMessage({ height }, "*");
-      console.log("Sending height to parent:", height);
     };
 
     window.addEventListener("resize", sendHeightToParent);
-    sendHeightToParent(); // initial send
+    sendHeightToParent();
 
-    // Observe dynamic React content (form changes, pagination, etc.)
     const observer = new MutationObserver(sendHeightToParent);
     observer.observe(document.body, { childList: true, subtree: true });
-
-    console.log("Iframe snippet running");
 
     return () => {
       window.removeEventListener("resize", sendHeightToParent);
       observer.disconnect();
     };
   }, []);
-  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    window.parent?.postMessage({ type: "scrollToTop" }, "*");
+  }, [page]);
 
   // --- Page 1 States ---
   const [volts, setVolts] = useState("");
@@ -31,7 +33,7 @@ function App() {
   const [length, setLength] = useState("200");
   const [diameter, setDiameter] = useState("200");
   const [shape, setShape] = useState("Rectangle");
-  const [connectionType, setConnectionType] = useState("Cable");
+  const [connectionType, setConnectionType] = useState("Cable (Multicore)");
   const [connectionLength, setConnectionLength] = useState("");
   const [terminationPos, setTerminationPos] = useState("1-bottom");
 
@@ -75,7 +77,7 @@ function App() {
     setLength("200");
     setDiameter("200");
     setShape("Rectangle");
-    setConnectionType("Cable");
+    setConnectionType("Cable (Multicore)");
     setConnectionLength("");
     setTerminationPos("1-bottom");
 
@@ -738,7 +740,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
               >
                 <h3 style={{ color: "#E50520" }}>Connection Type</h3>
 
-                {["Cable", "Leads"].map((type) => (
+                {["Cable (Multicore)", "Leads (Flying)"].map((type) => (
                   <label
                     key={type}
                     style={{ display: "block", marginBottom: "6px" }}
@@ -1337,7 +1339,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                   {/* CABLES / LEADS */}
                   {terminationPos === "1-bottom" && (
                     <>
-                      {connectionType === "Cable" && (
+                      {connectionType === "Cable (Multicore)" && (
                         <div
                           style={{
                             position: "absolute",
@@ -1352,7 +1354,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                         />
                       )}
 
-                      {connectionType === "Leads" && (
+                      {connectionType === "Leads (Flying)" && (
                         <>
                           <div
                             style={{
@@ -1389,7 +1391,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
                   {terminationPos === "2-left" && (
                     <>
-                      {connectionType === "Cable" && (
+                      {connectionType === "Cable (Multicore)" && (
                         <div
                           style={{
                             position: "absolute",
@@ -1404,7 +1406,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
                         />
                       )}
 
-                      {connectionType === "Leads" && (
+                      {connectionType === "Leads (Flying)" && (
                         <>
                           <div
                             style={{
