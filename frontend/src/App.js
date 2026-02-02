@@ -67,7 +67,6 @@ function App() {
   const diameterNum = parseFloat(diameter) || 0;
   const voltsNum = parseFloat(volts) || 0;
   const wattsNum = parseFloat(watts) || 0;
-  const connectionLengthNum = parseFloat(connectionLength) || 0;
 
   // ----- Reset helper Page 1 -----
   const clearPage1 = () => {
