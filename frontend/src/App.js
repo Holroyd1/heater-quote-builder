@@ -3,28 +3,40 @@ import React, { useState, useRef, useEffect } from "react";
 function App() {
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    const sendHeightToParent = () => {
-      const height = document.body.scrollHeight;
-      window.parent.postMessage({ height }, "*");
-    };
+useEffect(() => {
+  const sendHeight = () => {
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        { height: document.body.scrollHeight },
+        "*"
+      );
+    }
+  };
 
-    window.addEventListener("resize", sendHeightToParent);
-    sendHeightToParent();
+  sendHeight();
+  window.addEventListener("resize", sendHeight);
 
-    const observer = new MutationObserver(sendHeightToParent);
-    observer.observe(document.body, { childList: true, subtree: true });
+  const observer = new MutationObserver(sendHeight);
+  observer.observe(document.body, { childList: true, subtree: true });
 
-    return () => {
-      window.removeEventListener("resize", sendHeightToParent);
-      observer.disconnect();
-    };
-  }, []);
+  return () => {
+    window.removeEventListener("resize", sendHeight);
+    observer.disconnect();
+  };
+}, []);
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    window.parent?.postMessage({ type: "scrollToTop" }, "*");
-  }, [page]);
+
+useEffect(() => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  if (window.parent !== window) {
+    window.parent.postMessage(
+      { type: "SCROLL_TO_TOP" },
+      "*"
+    );
+  }
+}, [page]);
+
 
   // --- Page 1 States ---
   const [volts, setVolts] = useState("");
