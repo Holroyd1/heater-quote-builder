@@ -234,7 +234,7 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
       });
 
       if (response.ok) {
-        alert("Thank you! Your enquiry has been sent.");
+        alert("Thank you! Your enquiry has been sent to our Sales Engineering team. You may now close this window.");
         e.target.reset();
         setNotes("");
         setAttachmentFilePage1(null);
@@ -351,18 +351,21 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
 
 
       {/* STEP BAR */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          backgroundColor: "white",
-          zIndex: 10,
-          padding: "16px 24px",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
-        }}
-      >
+<div
+  style={{
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    backgroundColor: "white",
+    zIndex: 10,
+    height: "65px",
+    padding: "0 24px",
+    boxShadow: "0 2px 5px rgba(0,0,0,0.08)",
+    display: "flex",
+    alignItems: "center",
+  }}
+>
         <div
           className="step-bar"
           style={{
@@ -370,10 +373,16 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
             margin: "0 auto",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "space-between",
             gap: "16px",
           }}
         >
+  {/* LOGO */}
+  <img
+    src="/holroyd-logo.png"
+    alt="Holroyd Bespoke Surface Heating Elements"
+    style={{ height: "60px", objectFit: "contain" }}
+  />
           {[
             { num: 1, label: "Dimensions & Power" },
             { num: 2, label: "Add-Ons" },
@@ -430,6 +439,33 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
           ))}
         </div>
       </div>
+
+      {/* PAGE HEADER (below step bar, above main layout) */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "20px 20px 0px",
+          marginTop: "50px", // pushes content below fixed step bar
+        }}
+      >
+<h1
+  style={{
+    fontSize: "34px",
+    fontWeight: "bold",
+    margin: 0,
+    color: "#E50520",
+  }}
+>
+  Quotation Configurator
+</h1>
+        <p style={{ marginTop: 8, color: "#000", maxWidth: 780 }}>
+Use this tool to configure your heater specifications. Once submitted, 
+your request will be reviewed by our quotation team, and you will receive a response within 24 hours.
+          
+        </p>
+      </div>
+
 
       {/* MAIN LAYOUT */}
       <div
@@ -1208,18 +1244,38 @@ ${annualQty ? `Annual Quantity: ${annualQty}` : ""}
           )}
         </div>
 
-        {/* RIGHT PANEL: PREVIEW + SUMMARY */}
-        <div
-          className="right-panel"
-          style={{
-            flex: 1,
-            textAlign: "center",
-            backgroundColor: "#f9f9f9",
-            padding: "20px",
-            borderRadius: "8px",
-          }}
-        >
-          <h3 style={{ marginBottom: 20 }}>Preview</h3>
+
+{/* RIGHT SIDE CONTAINER */}
+<div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+  {/* Close button ABOVE the grey preview box */}
+  <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 10 }}>
+    <button
+      type="button"
+      onClick={() => window.close()}
+      style={{
+        padding: "6px 12px",
+        backgroundColor: "#eee",
+        border: "1px solid #bbb",
+        borderRadius: "4px",
+        cursor: "pointer",
+        fontSize: 14,
+      }}
+    >
+      Close
+    </button>
+  </div>
+
+  {/* RIGHT PANEL: PREVIEW + SUMMARY */}
+  <div
+    className="right-panel"
+    style={{
+      textAlign: "center",
+      backgroundColor: "#f9f9f9",
+      padding: "20px",
+      borderRadius: "8px",
+    }}
+  >
+    <h3 style={{ marginBottom: 20 }}>Preview</h3>
 
           {shape !== "Attachment" ? (
             <div
@@ -1803,6 +1859,7 @@ whiteSpace: "nowrap",
           </div>
         </div>
       </div>
+</div>
 
       {/* HIDDEN PERSISTENT FILE INPUTS (never unmounted) */}
       <input
